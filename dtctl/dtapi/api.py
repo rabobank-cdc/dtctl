@@ -4,9 +4,9 @@ import os
 import sys
 import json
 try:
-    from json import JSONDecodeError
-except ImportError:
     from simplejson.errors import JSONDecodeError
+except ImportError:
+    from json import JSONDecodeError
 import datetime as dt
 import requests
 
