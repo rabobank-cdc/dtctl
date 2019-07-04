@@ -3,6 +3,10 @@ import hmac
 import os
 import sys
 import json
+try:
+    from json import JSONDecodeError
+except ImportError:
+    from simplejson.errors import JSONDecodeError
 import datetime as dt
 import requests
 
@@ -95,7 +99,7 @@ class Api:
         if resp.status_code in [200, 201]:
             try:
                 return resp.json()
-            except (json.decoder.JSONDecodeError, json.JSONDecodeError):
+            except (json.decoder.JSONDecodeError, JSONDecodeError):
                 body = resp.text
                 if '<title>Darktrace | Login</title>' in body:
                     raise SystemExit('API endpoint not supported')
@@ -138,13 +142,13 @@ class Api:
         except requests.exceptions.HTTPError as err:
             try:
                 print(json.dumps(resp.json(), indent=4), file=sys.stderr)
-            except (json.decoder.JSONDecodeError, json.JSONDecodeError):
+            except (json.decoder.JSONDecodeError, JSONDecodeError):
                 pass
             raise SystemExit(err)
 
         try:
             return resp.json()
-        except (json.decoder.JSONDecodeError, json.JSONDecodeError):
+        except (json.decoder.JSONDecodeError, JSONDecodeError):
             body = resp.text
             if '<title>Darktrace | Login</title>' in body:
                 raise SystemExit('API endpoint not supported')
