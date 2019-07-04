@@ -1,0 +1,10 @@
+click
+requests
+openpyxl
+pandas
+netaddr
+pycryptodomex
+dictdiffer
+pytest
+prospector
+requests-mock

@@ -1,0 +1,130 @@
+[
+  [
+    {
+      "cbid": 1111111111111,
+      "device": {
+          "did": 1000000000001,
+          "objecttype": "device",
+          "hostname": "host1.name.local",
+          "sid": 10000000011111,
+          "typelabel": "Laptop",
+          "typename": "laptop",
+          "credentials": [
+              "fake_credential1"
+          ]
+      },
+      "triggeredFilters": [
+        {
+          "arguments": {
+            "value": 1
+          },
+          "cfid": 1,
+          "comparatorType": "display",
+          "filterType": "Connection hostname",
+          "id": "A",
+          "trigger": {
+            "value": "destination.hostname.test"
+          }
+        },
+        {
+          "arguments": {
+            "value": "Windows"
+          },
+          "cfid": 2,
+          "comparatorType": "contains",
+          "filterType": "Internal destination device OS",
+          "id": "E",
+          "trigger": {
+            "value": "Windows NT kernel"
+          }
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "cbid": 1111111111112,
+      "device": {
+        "did": 1000000000002,
+        "objecttype": "device",
+        "ip": "10.0.0.2",
+        "sid": 10000000022222,
+        "typelabel": "Laptop",
+        "typename": "laptop",
+        "credentials": [
+          "fake_credential2"
+        ]
+      },
+      "triggeredFilters": [
+        {
+        "arguments": {
+          "value": 1
+        },
+          "cfid": 1,
+          "comparatorType": "display",
+          "filterType": "Destination IP",
+          "id": "A",
+          "trigger": {
+            "value": "10.0.0.1"
+          }
+        },
+        {
+          "arguments": {
+            "value": "Windows"
+          },
+          "cfid": 2,
+          "comparatorType": "contains",
+          "filterType": "Internal destination device OS",
+          "id": "E",
+          "trigger": {
+            "value": "Windows NT kernel"
+          }
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "cbid": 1111111111113,
+      "not_a_device": {
+        "key": "value"
+      },
+      "triggeredFilters": [
+        {
+          "arguments": {
+            "value": "Windows"
+          },
+          "cfid": 2,
+          "comparatorType": "display",
+          "filterType": "Message",
+          "id": "E",
+          "trigger": {
+            "value": "Destination message"
+          }
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "cbid": 1111111111114,
+      "not_a_device": {
+        "key": "value"
+      },
+      "triggeredFilters": [
+        {
+          "arguments": {
+            "value": 1
+          },
+          "cfid": 1,
+          "comparatorType": "not_display",
+          "filterType": "Destination IP",
+          "id": "A",
+          "trigger": {
+            "value": "10.0.0.1"
+          }
+        }
+      ]
+    }
+  ]
+]

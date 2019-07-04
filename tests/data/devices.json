@@ -1,0 +1,71 @@
+[
+    {
+        "did": 1000000000001,
+        "endtime": 1546300800000,
+        "id": 1000000000001,
+        "ip": "10.0.0.10",
+        "ips": [
+            {
+                "ip": "10.0.0.10",
+                "sid": 1000000001111,
+                "time": "2019-01-01 00:00:00",
+                "timems": 1546300800000
+            }
+        ],
+        "os": "Windows NT kernel",
+        "sid": 1000000001111,
+        "time": 1546300800000,
+        "typelabel": "Desktop",
+        "typename": "desktop"
+    },
+    {
+        "credentials": [
+            {
+                "credential": "testCredential1"
+            }
+        ],
+        "did": 1000000111112,
+        "endtime": 1546300800000,
+        "hostname": "testdevice.domain.dev",
+        "id": 1000000111112,
+        "ip": "10.0.0.11",
+        "ips": [
+            {
+                "ip": "10.0.0.11",
+                "sid": 1000000001112,
+                "time": "2019-01-01 00:00:00",
+                "timems": 1546300800000
+            }
+        ],
+        "os": "Windows NT kernel",
+        "sid": 1000000001112,
+        "time": 1546300800000,
+        "typelabel": "Laptop",
+        "typename": "laptop"
+    },
+    {
+        "credentials": [
+            {
+                "credential": "testCredential2"
+            }
+        ],
+        "did": 1000000111113,
+        "endtime": 1546300800000,
+        "hostname": "anotherdevice.differentdomain.org",
+        "id": 1000000111113,
+        "ip": "10.0.0.12",
+        "ips": [
+            {
+                "ip": "10.0.0.12",
+                "sid": 1000000001113,
+                "time": "2019-01-01 00:00:00",
+                "timems": 1546300800000
+            }
+        ],
+        "os": "Linux",
+        "sid": 1000000001113,
+        "time": 1546300800000,
+        "typelabel": "Server",
+        "typename": "server"
+    }
+]

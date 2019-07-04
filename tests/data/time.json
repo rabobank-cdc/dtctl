@@ -1,0 +1,12 @@
+{
+    "antigena": true,
+    "antigenainternet": true,
+    "antigenanetwork": true,
+    "build": "10dk49fu",
+    "inoculation": true,
+    "mobileAppConfigured": true,
+    "time": "2019-01-01 00:00:00",
+    "timems": 1546300800000,
+    "uptime": "1000000",
+    "version": "1.0.0"
+}
