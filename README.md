@@ -55,6 +55,15 @@ and just run
 dtctl 
 ```
 
+## Docker
+A Dockerfile and image are available for getting started with dtctl. If you want to make use of a
+configuration file you need to mount a volume.
+
+```
+docker run -v $HOME/.dtctl:~/.dtctl -it dtctl --help
+```
+
+
 ## Development
 Development follows the Gitflow Workflow but without the use of the Gitflow extension.
 For background information check 
