@@ -63,6 +63,11 @@ configuration file you need to mount a volume.
 docker run -v $HOME/.dtctl:~/.dtctl -it dtctl --help
 ```
 
+To build from Dockerfile
+
+```
+docker build -t dtctl .
+```
 
 ## Development
 Development follows the Gitflow Workflow but without the use of the Gitflow extension.
