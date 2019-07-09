@@ -8,7 +8,7 @@ PRIVKEY = 'privkey'
 CACERT = '/test/path/to/cacert'
 INSECURE = True
 DEBUG = True
-PRE_COMPUTED_SIGNATURE = 'aab1d2c0656c9da3910725a40c18ea7a0d221b54'
+PRE_COMPUTED_SIGNATURE = '226d9269435a1e9dbdf19745c25c982fb0ddab97'
 
 
 def test_missing_values():
