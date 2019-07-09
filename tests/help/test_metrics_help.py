@@ -10,7 +10,9 @@ runner = CliRunner()
 @patch('dtctl.cli.get_private_key')
 def test_metrics_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['metrics', '--help'])
+    # Due to the way CliRunner works, we need to
+    # provide the -h and -p options when invoking.
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'metrics', '--help'])
 
     assert result.exit_code == 0
     assert 'View Darktrace metrics' in result.output
@@ -20,7 +22,7 @@ def test_metrics_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_metrics_list_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['metrics', 'list', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'metrics', 'list', '--help'])
 
     assert result.exit_code == 0
     assert 'List Darktrace metrics' in result.output

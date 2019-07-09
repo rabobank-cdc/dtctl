@@ -10,7 +10,9 @@ runner = CliRunner()
 @patch('dtctl.cli.get_private_key')
 def test_system_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['system', '--help'])
+    # Due to the way CliRunner works, we need to
+    # provide the -h and -p options when invoking.
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', '--help'])
 
     assert result.exit_code == 0
     assert 'View internal Darktrace information' in result.output
@@ -26,7 +28,7 @@ def test_system_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_system_auditlog_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['system', 'auditlog', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', 'auditlog', '--help'])
 
     assert result.exit_code == 0
     assert 'Account audit log' in result.output
@@ -38,7 +40,7 @@ def test_system_auditlog_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_system_info_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['system', 'info', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', 'info', '--help'])
 
     assert result.exit_code == 0
     assert 'View Darktrace system information such as time and version' in result.output
@@ -48,7 +50,7 @@ def test_system_info_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_system_instances_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['system', 'instances', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', 'instances', '--help'])
 
     assert result.exit_code == 0
     assert 'View Darktrace instances, their labels, id numbers and potential locations.' in result.output
@@ -60,7 +62,7 @@ def test_system_instances_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_system_status_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['system', 'status', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', 'status', '--help'])
 
     assert result.exit_code == 0
     assert 'Detailed status information of all instances and probes' in result.output
@@ -70,7 +72,7 @@ def test_system_status_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_system_summary_statistics_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['system', 'summary-statistics', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', 'summary-statistics', '--help'])
 
     assert result.exit_code == 0
     assert 'Summary of Darktrace statistics' in result.output
@@ -80,7 +82,7 @@ def test_system_summary_statistics_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_system_tags_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['system', 'tags', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', 'tags', '--help'])
 
     assert result.exit_code == 0
     assert 'All tags configured in Darktrace' in result.output
@@ -90,7 +92,7 @@ def test_system_tags_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_system_usage_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['system', 'usage', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', 'usage', '--help'])
 
     assert result.exit_code == 0
     assert 'Short usage information of all instances and probes' in result.output

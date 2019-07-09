@@ -196,7 +196,7 @@ def get_dhcp_stats(api):
             # 3. Never -> Never seen DHCP or not tracking
             #               - Because DHCP tracking is disabled (covered in statement above)
             #               - Because no client devices are inside the subnet (covered in statement below)
-            if (subnet['mostRecentDHCP'] == 'Never') and subnet['clientDevices'] is 0:
+            if (subnet['mostRecentDHCP'] == 'Never') and subnet['clientDevices'] == 0:
                 dhcp_information[instance_key]['subnets_without_clients'] += 1
                 continue
 

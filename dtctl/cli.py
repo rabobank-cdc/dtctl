@@ -76,73 +76,61 @@ def cli(ctx, host, pub_dtkey, priv_dtkey, cacert, insecure, debug, config_file):
 @cli.group()
 def breaches():
     """Commands for Darktrace model breaches"""
-    pass
 
 
 @cli.group()
 def components():
     """View Darktrace components"""
-    pass
 
 
 @cli.group()
 def config():
     """Manage dtctl configurations"""
-    pass
 
 
 @cli.group()
 def details():
     """View details of entities (represented as commands)"""
-    pass
 
 
 @cli.group()
 def devices():
     """List active devices identified by Darktrace"""
-    pass
 
 
 @cli.group()
 def filters():
     """View Darktrace filters"""
-    pass
 
 
 @cli.group()
 def intelfeed():
     """Manage Darktrace's intelligence feeds"""
-    pass
 
 
 @cli.group()
 def metrics():
     """View Darktrace metrics"""
-    pass
 
 
 @cli.group()
 def models():
     """View Darktrace models"""
-    pass
 
 
 @cli.group()
 def subnets():
     """View information of Darktrace's identified subnets"""
-    pass
 
 
 @cli.group()
 def system():
     """View internal Darktrace information"""
-    pass
 
 
 @cli.group()
 def query():
     """Send direct HTTP requests to Darktrace API"""
-    pass
 
 
 # Sub-commands for "breach" command

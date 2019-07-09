@@ -10,7 +10,9 @@ runner = CliRunner()
 @patch('dtctl.cli.get_private_key')
 def test_query_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['query', '--help'])
+    # Due to the way CliRunner works, we need to
+    # provide the -h and -p options when invoking.
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'query', '--help'])
 
     assert result.exit_code == 0
     assert "Send direct HTTP requests to Darktrace API" in result.output
@@ -21,7 +23,7 @@ def test_query_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_query_get_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['query', 'get', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'query', 'get', '--help'])
 
     assert result.exit_code == 0
     assert 'Send a GET request to Darktrace' in result.output
@@ -40,7 +42,7 @@ def test_query_get_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_query_post_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['query', 'post', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'query', 'post', '--help'])
 
     assert result.exit_code == 0
     assert 'Send a POST request to Darktrace.' in result.output

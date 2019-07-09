@@ -10,7 +10,9 @@ runner = CliRunner()
 @patch('dtctl.cli.get_private_key')
 def test_config_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['config', '--help'])
+    # Due to the way CliRunner works, we need to
+    # provide the -h and -p options when invoking.
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'config', '--help'])
 
     assert result.exit_code == 0
     assert 'Manage dtctl configurations' in result.output
@@ -21,7 +23,7 @@ def test_config_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_config_get_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['config', 'get', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'config', 'get', '--help'])
 
     assert result.exit_code == 0
     # Ensures that arguments additions fail the test
@@ -38,7 +40,7 @@ def test_config_get_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_config_set_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['config', 'set', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'config', 'set', '--help'])
 
     assert result.exit_code == 0
     # Ensures that arguments additions fail the test

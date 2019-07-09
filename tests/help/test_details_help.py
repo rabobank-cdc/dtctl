@@ -10,7 +10,9 @@ runner = CliRunner()
 @patch('dtctl.cli.get_private_key')
 def test_details_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['details', '--help'])
+    # Due to the way CliRunner works, we need to
+    # provide the -h and -p options when invoking.
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'details', '--help'])
 
     assert result.exit_code == 0
     assert 'View details of entities (represented as commands)' in result.output
@@ -24,7 +26,7 @@ def test_details_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_details_breach_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['details', 'breach', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'details', 'breach', '--help'])
 
     assert result.exit_code == 0
     assert 'details breach [OPTIONS] PBID' in result.output
@@ -35,7 +37,7 @@ def test_details_breach_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_details_connection_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['details', 'connection', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'details', 'connection', '--help'])
 
     assert result.exit_code == 0
     assert 'details connection [OPTIONS] UID' in result.output
@@ -52,7 +54,7 @@ def test_details_connection_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_details_device_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['details', 'device', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'details', 'device', '--help'])
 
     assert result.exit_code == 0
     assert 'details device [OPTIONS] DID' in result.output
@@ -68,7 +70,7 @@ def test_details_device_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_details_host_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['details', 'host', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'details', 'host', '--help'])
 
     assert result.exit_code == 0
     assert 'details host [OPTIONS] HOSTNAME' in result.output
@@ -84,7 +86,7 @@ def test_details_host_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_details_msg_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['details', 'msg', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'details', 'msg', '--help'])
 
     assert result.exit_code == 0
     assert 'details msg [OPTIONS] TEXT' in result.output

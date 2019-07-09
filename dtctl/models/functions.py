@@ -1,4 +1,5 @@
 # pylint: disable=C0121
+# pylint: disable=E1135
 """Functions used by the Click models subcommand"""
 import os
 import datetime as dt
@@ -411,7 +412,7 @@ def breach_summary(api, **kwargs):
                        includeacknowledged='true', historicmodelonly='true', minimal='false')
 
     breaches_df = json_normalize(breaches)
-    breaches_df['acknowledged'] = breaches_df['acknowledged'].map(lambda x: True if x else False)
+    breaches_df['acknowledged'] = breaches_df['acknowledged'].map(bool)
 
     summary_df = pd.DataFrame(columns=['nr_of_breaches', 'nr_of_acknowledged'])
 
