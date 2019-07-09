@@ -34,7 +34,7 @@ def prstime(time_to_parse):
 
     :return: DateTime
     """
-    return dt.datetime.fromtimestamp(round(time_to_parse / 1000))
+    return dt.datetime.utcfromtimestamp(round(time_to_parse / 1000))
 
 
 def current_date():
