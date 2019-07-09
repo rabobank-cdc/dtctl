@@ -10,7 +10,9 @@ runner = CliRunner()
 @patch('dtctl.cli.get_private_key')
 def test_models_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['models', '--help'])
+    # Due to the way CliRunner works, we need to
+    # provide the -h and -p options when invoking.
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', '--help'])
 
     assert result.exit_code == 0
     assert 'View Darktrace models' in result.output
@@ -27,7 +29,7 @@ def test_models_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_models_autoupdatable_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['models', 'autoupdatable', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', 'autoupdatable', '--help'])
 
     assert result.exit_code == 0
     assert 'List all models that have auto-update configured' in result.output
@@ -37,7 +39,7 @@ def test_models_autoupdatable_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_models_input_diff_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['models', 'input-diff', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', 'input-diff', '--help'])
 
     assert result.exit_code == 0
 
@@ -65,7 +67,7 @@ def test_models_input_diff_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_models_list_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['models', 'list', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', 'list', '--help'])
 
     assert result.exit_code == 0
     assert 'List all models present within Darktrace' in result.output
@@ -81,7 +83,7 @@ def test_models_list_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_models_pending_updates_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['models', 'pending-updates', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', 'pending-updates', '--help'])
 
     assert result.exit_code == 0
     assert 'List all models that have updates pending' in result.output
@@ -93,7 +95,7 @@ def test_models_pending_updates_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_models_report_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['models', 'report', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', 'report', '--help'])
 
     assert result.exit_code == 0
 
@@ -115,7 +117,7 @@ def test_models_report_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_models_select_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['models', 'select', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', 'select', '--help'])
 
     assert result.exit_code == 0
 
@@ -135,7 +137,7 @@ def test_models_select_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_models_update_diff_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['models', 'update-diff', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', 'update-diff', '--help'])
 
     assert result.exit_code == 0
 
@@ -149,7 +151,7 @@ def test_models_update_diff_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_models_updatable_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['models', 'updatable', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', 'updatable', '--help'])
 
     assert result.exit_code == 0
     assert 'List all models that can be updated without losing custom changes' in result.output

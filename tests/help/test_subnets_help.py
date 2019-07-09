@@ -10,7 +10,9 @@ runner = CliRunner()
 @patch('dtctl.cli.get_private_key')
 def test_subnets_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['subnets', '--help'])
+    # Due to the way CliRunner works, we need to
+    # provide the -h and -p options when invoking.
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'subnets', '--help'])
 
     assert result.exit_code == 0
     assert "View information of Darktrace's identified subnets" in result.output
@@ -25,7 +27,7 @@ def test_subnets_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_subnets_aggregates_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['subnets', 'aggregates', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'subnets', 'aggregates', '--help'])
 
     assert result.exit_code == 0
     assert "Lists the CIDR merged subnets without their meta data (IPv4 only)" in result.output
@@ -35,7 +37,7 @@ def test_subnets_aggregates_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_subnets_devices_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['subnets', 'devices', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'subnets', 'devices', '--help'])
 
     assert result.exit_code == 0
     assert 'Nr of devices seen by Darktrace' in result.output
@@ -45,7 +47,7 @@ def test_subnets_devices_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_subnets_dhcp_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['subnets', 'dhcp', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'subnets', 'dhcp', '--help'])
 
     assert result.exit_code == 0
     assert 'Metrics for DHCP tracking' in result.output
@@ -55,7 +57,7 @@ def test_subnets_dhcp_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_subnets_instances_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['subnets', 'instances', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'subnets', 'instances', '--help'])
 
     assert result.exit_code == 0
     assert 'Lists subnets seen per Darktrace instance (IPv4 only)' in result.output
@@ -65,7 +67,7 @@ def test_subnets_instances_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_subnets_list_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['subnets', 'list', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'subnets', 'list', '--help'])
 
     assert result.exit_code == 0
     assert 'List all subnets without their meta data (IPv4 only)' in result.output
@@ -75,7 +77,7 @@ def test_subnets_list_command(get_private_key):
 @patch('dtctl.cli.get_private_key')
 def test_subnets_unidirectional_command(get_private_key):
     get_private_key.return_value = ''
-    result = runner.invoke(cli, ['subnets', 'unidirectional', '--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'subnets', 'unidirectional', '--help'])
 
     assert result.exit_code == 0
     assert 'Metrics for unidirectional traffic' in result.output

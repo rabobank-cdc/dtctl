@@ -41,7 +41,7 @@ def test_prstime():
     with pytest.raises(TypeError) as exc_info:
         prstime('20190101T00:00:00')
 
-    assert prstime(timestamp_int) == dt.datetime(1970, 1, 19, 2, 8, 10)
+    assert prstime(timestamp_int) == dt.datetime(1970, 1, 19, 1, 8, 10)
     assert isinstance(prstime(timestamp_int), dt.datetime)
     assert isinstance(exc_info.value, TypeError)
 

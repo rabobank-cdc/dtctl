@@ -7,7 +7,9 @@ runner = CliRunner()
 
 
 def test_main_options():
-    result = runner.invoke(cli, ['--help'])
+    # Due to the way CliRunner works, we need to
+    # provide the -h and -p options when invoking.
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', '--help'])
 
     assert result.exit_code == 0
     assert 'Darktrace Command Line Interface' in result.output
@@ -22,7 +24,7 @@ def test_main_options():
 
 
 def test_commands():
-    result = runner.invoke(cli, ['--help'])
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', '--help'])
 
     assert result.exit_code == 0
     assert re.search(r'breaches\s+Commands', result.output)
