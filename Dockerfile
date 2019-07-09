@@ -1,6 +1,9 @@
 # Python 3.7 required
 FROM python:3.7-alpine
 
+# Install GCC (Needed for PyCryptoDomex)
+RUN apk add build-base
+
 # Add repository files to image
 ADD . /opt/dtctl
 

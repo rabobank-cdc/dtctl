@@ -56,11 +56,19 @@ dtctl
 ```
 
 ## Docker
-A Dockerfile and image are available for getting started with dtctl. If you want to make use of a
-configuration file you need to mount a volume.
+A Dockerfile is made available for getting started with dtctl. If you want to make use of a
+configuration file, make sure you mount a volume.
+
+First build
 
 ```
-docker run -v $HOME/.dtctl:~/.dtctl -it dtctl --help
+docker build . -t dtctl
+```
+
+Than run
+
+```
+docker run -v $HOME/.dtctl:/root/.dtctl dtctl --help
 ```
 
 To build from Dockerfile
