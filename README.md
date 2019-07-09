@@ -56,21 +56,19 @@ dtctl
 ```
 
 ## Docker
-A Dockerfile is made available for getting started with dtctl. If you want to make use of a
-configuration file, make sure you mount a volume.
+A Docker image is made available for getting started with dtctl. If you want to make use of a
+configuration file, make sure you mount a volume and specify the config file (if not mounted
+to the default config file location).
 
-First build
+```
+docker run -v $HOME/.dtctl:/root/.dtctl rabobankcdc/dtctl --help
+```
+
+In case you want to build yourself
 
 ```
 docker build . -t dtctl
 ```
-
-Than run
-
-```
-docker run -v $HOME/.dtctl:/root/.dtctl dtctl --help
-```
-
 
 ## Development
 Development follows the Gitflow Workflow but without the use of the Gitflow extension.
