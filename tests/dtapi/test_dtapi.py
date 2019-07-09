@@ -42,8 +42,8 @@ def test_setting_values():
 def test_api_get_signature():
     api = Api(HOST, PUB_DTKEY, PRIVKEY)
 
-    test_epoch = 1559566692  # 2019-01-01 01:00:00
-    timestamp = dt.datetime.fromtimestamp(test_epoch).strftime('%Y%m%dT%H%M%S')
+    test_epoch = 1546304400  # 2019-01-01 01:00:00
+    timestamp = dt.datetime.utcfromtimestamp(test_epoch).strftime('%Y%m%dT%H%M%S')
 
     assert PRE_COMPUTED_SIGNATURE == api.get_signature('/status', timestamp)
 
@@ -51,8 +51,8 @@ def test_api_get_signature():
 def test_get_headers():
     api = Api(HOST, PUB_DTKEY, PRIVKEY)
 
-    test_epoch = 1559566692  # 2019-01-01 01:00:00
-    timestamp = dt.datetime.fromtimestamp(test_epoch).strftime('%Y%m%dT%H%M%S')
+    test_epoch = 1546304400  # 2019-01-01 01:00:00
+    timestamp = dt.datetime.utcfromtimestamp(test_epoch).strftime('%Y%m%dT%H%M%S')
 
     headers = api.get_headers('/status', timestamp)
 
