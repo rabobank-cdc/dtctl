@@ -64,21 +64,12 @@ to the default config file location).
 docker run -v $HOME/.dtctl:/root/.dtctl rabobankcdc/dtctl --help
 ```
 
-In case you want to build yourself
-
-```
-docker build . -t dtctl
-```
-
-<<<<<<< HEAD
 To build from Dockerfile
 
 ```
 docker build -t dtctl .
 ```
 
-=======
->>>>>>> f91d4b20d717c0051127c4cc76f314c8d677b4d7
 ## Development
 Development follows the Gitflow Workflow but without the use of the Gitflow extension.
 For background information check 
