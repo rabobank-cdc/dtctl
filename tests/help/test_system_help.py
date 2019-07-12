@@ -19,6 +19,7 @@ def test_system_command(get_private_key):
     assert re.search(r'auditlog\s+Account', result.output)
     assert re.search(r'info\s+View', result.output)
     assert re.search(r'instances\s+View', result.output)
+    assert re.search(r'packet-loss\s+View', result.output)
     assert re.search(r'status\s+Detailed', result.output)
     assert re.search(r'summary-statistics\s+Summary', result.output)
     assert re.search(r'tags\s+All', result.output)
@@ -56,6 +57,21 @@ def test_system_instances_command(get_private_key):
     assert 'View Darktrace instances, their labels, id numbers and potential locations.' in result.output
     assert '- Master id numbers are prepended to breach ids.' in result.output
     assert "- Location is determined by the Master's label." in result.output
+    assert '-o, --outfile PATH' in result.output
+
+
+@patch('dtctl.cli.get_private_key')
+def test_system_packet_loss_command(get_private_key):
+    get_private_key.return_value = ''
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', 'packet-loss', '--help'])
+
+    assert result.exit_code == 0
+    assert 'Information about reported packet loss per system' in result.output
+
+    # Options
+    assert '-d, --days INTEGER' in result.output
+    assert '--start-date [%d-%m-%Y]' in result.output
+    assert '--end-date [%d-%m-%Y]' in result.output
     assert '-o, --outfile PATH' in result.output
 
 

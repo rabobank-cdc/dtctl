@@ -192,6 +192,7 @@ system.add_command(system_commands.summary_statistics)
 system.add_command(system_commands.tags)
 system.add_command(system_commands.instances)
 system.add_command(system_commands.moo)
+system.add_command(system_commands.packet_loss)
 
 # sub-commands for "query" command
 query.add_command(query_commands.get)

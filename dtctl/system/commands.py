@@ -1,8 +1,9 @@
 # pylint: disable=C0111
 import click
 from dtctl.system.functions import get_status, get_usage, get_tags, get_info, get_auditlog, \
-    get_summary_statistics, get_instances
+    get_summary_statistics, get_instances, get_packet_loss
 from dtctl.utils.output import process_output
+from dtctl.utils.timeutils import determine_date_range
 
 
 @click.command('info', short_help='View Darktrace system information')
@@ -70,6 +71,22 @@ def instances(program_state, outfile):
 def auditlog(program_state, offset, limit, outfile):
     """Account audit log"""
     process_output(get_auditlog(program_state.api, offset=offset, limit=limit), outfile)
+
+
+@click.command('packet-loss', short_help='View packet loss information')
+@click.option('--days', '-d', default=7, type=click.INT,
+              help='Number of days in the past for the start date of the report.')
+@click.option('--start-date', type=click.DateTime(formats=('%d-%m-%Y',)),
+              help='Start date of the report. (overwrites the "--days" flag)')
+@click.option('--end-date', type=click.DateTime(formats=('%d-%m-%Y',)),
+              help='End date of the report.')
+@click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
+@click.pass_obj
+def packet_loss(program_state, days, start_date, end_date, outfile):
+    """Information about reported packet loss per system"""
+    end_date, start_date = determine_date_range(days, end_date, start_date)
+
+    process_output(get_packet_loss(program_state.api, start_date, end_date), outfile)
 
 
 @click.command('moo', hidden=True, add_help_option=False)

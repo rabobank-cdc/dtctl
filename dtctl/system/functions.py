@@ -1,4 +1,6 @@
 """Functions used by the Click system subcommand"""
+import re
+from dtctl.utils.timeutils import fmttime, prstime
 
 
 def get_summary_statistics(api, **kwargs):
@@ -135,3 +137,72 @@ def get_auditlog(api, **kwargs):
     """
     # accountactivity?offset=0&limit=30
     return api.get('/accountactivity', **kwargs)
+
+
+def get_packet_loss(api, start_date, end_date):
+    """
+    View packet loss information based on Darktrace's system::packet_loss model
+
+    :param api: Darktrace API object with initialized config values
+    :type api: Api
+    :param start_date: DateTime object that represents the start time for which breaches to report on
+    :type start_date: DateTime
+    :param end_date: DateTime object that represents the end time for which breaches to report on
+    :type end_date: DateTime
+    :return:
+    :rtype:
+    """
+    start_date = fmttime(start_date) if start_date else None
+    end_date = fmttime(end_date) if end_date else None
+
+    models = api.get('/models')
+    packet_loss_model = None
+
+    for model in models:
+        if model['name'] != 'System::Packet Loss':
+            continue
+        packet_loss_model = model
+
+    packet_loss_breaches = api.get('/modelbreaches', pid=packet_loss_model['pid'],
+                                   starttime=start_date, endtime=end_date)
+
+    return extract_packet_loss_information(packet_loss_breaches)
+
+
+def extract_packet_loss_information(packet_loss_breaches):
+    """
+    Extract packet loss information from trigger values in breaches
+
+    :param packet_loss_breaches: Breaches from the packet loss model
+    :type packet_loss_breaches: List
+    :return: Packet loss statistics per system
+    :rtype: Dict
+    """
+    result = {}
+
+    host_regex = r'Host (.+?):'
+    valid_ip_regex = r'\d+\.\d+\.\d+\.\d+$'
+    packet_loss_regex = r'rate above ([0-9]+\.[0-9]+)'
+    worker_drop_regex = r'worker drop rate: ([0-9]+\.[0-9]+)'
+
+    for breach in packet_loss_breaches:
+        for triggered_component in breach['triggeredComponents']:
+            for triggered_filter in triggered_component['triggeredFilters']:
+                if triggered_filter['comparatorType'] == 'display':
+                    continue
+
+                value = triggered_filter['trigger']['value']
+                packet_loss_percentage = re.search(packet_loss_regex, value)[1]
+                worker_drop_percentage = re.search(worker_drop_regex, value)[1]
+                host = re.search(host_regex, value)[1]
+                ip_address = re.search(valid_ip_regex, host)[0]
+
+                info_dict = {'date': '{0}'.format(prstime(triggered_component['time'])),
+                             'packet_loss': packet_loss_percentage,
+                             'worker_drop_rate': worker_drop_percentage}
+
+                if ip_address in result:
+                    result[ip_address].append(info_dict)
+                else:
+                    result[ip_address] = [info_dict]
+    return result
