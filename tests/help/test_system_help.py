@@ -57,6 +57,7 @@ def test_system_instances_command(get_private_key):
     assert 'View Darktrace instances, their labels, id numbers and potential locations.' in result.output
     assert '- Master id numbers are prepended to breach ids.' in result.output
     assert "- Location is determined by the Master's label." in result.output
+    assert '-p, --show-probes' in result.output
     assert '-o, --outfile PATH' in result.output
 
 

@@ -39,10 +39,12 @@ def test_get_instances(status_info):
     api = Api('http://127.0.0.1', 'pubkey', 'privkey')
     api.get = MagicMock(return_value=status_info)
 
-    instances = get_instances(api)
+    instances = get_instances(api, True)
 
     assert instances['darktrace-instance-1']['id'] == 1
     assert instances['darktrace-instance-1']['label'] == 'Label with a name1'
+    assert len(instances['darktrace-instance-1']['probes']) == 1
+    assert instances['darktrace-instance-1']['probes'][0]['ip'] == '192.168.1.1'
     assert 'region' not in instances['darktrace-instance-1']
     assert instances['darktrace-instance-2']['id'] == 2
     assert instances['darktrace-instance-2']['label'] == 'Location2 - Name2'

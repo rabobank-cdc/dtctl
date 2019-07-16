@@ -47,9 +47,10 @@ def summary_statistics(program_state, outfile):
 
 
 @click.command('instances', short_help='View Darktrace instances')
+@click.option('--show-probes', '-p', is_flag=True, default=False, show_default=True)
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
 @click.pass_obj
-def instances(program_state, outfile):
+def instances(program_state, show_probes, outfile):
     """
     View Darktrace instances, their labels, id numbers and potential locations.
 
@@ -58,9 +59,8 @@ def instances(program_state, outfile):
         - Master id numbers are prepended to breach ids.
         - Location is determined by the Master's label. The part before a "-" is
           considered to be the device's location or region.
-
     """
-    process_output(get_instances(program_state.api), outfile)
+    process_output(get_instances(program_state.api, show_probes), outfile)
 
 
 @click.command('auditlog', short_help='Account audit log')

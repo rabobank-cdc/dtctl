@@ -99,18 +99,20 @@ def get_info(api, **kwargs):
     return api.get('/time', **kwargs)
 
 
-def get_instances(api, **kwargs):
+def get_instances(api, show_probes, **kwargs):
     """
     Get Darktrace master instances, their labels and id numbers.
-    id numbers are useful because they are used in breach ids
-    Breach ids starts with instance id and than a unique range of numbers.
+    Id numbers are useful because they are used in breach ids.
+    Breach ids starts with instance id followed by a unique range of numbers.
 
     A label can be structured in multiple free-format ways. If there is a
     '-' in the label, we assume that the first part is a 'location' or 'region'
 
     :param api: Darktrace API object with initialized config values
     :type api: Api
-    :param kwargs: All arguements needing to be passed to the API call
+    :param show_probes: To include probe information in output
+    :type show_probes: Bool
+    :param kwargs: All arguments needing to be passed to the API call
     :type kwargs: Dict
     :return: Darktrace master instances with their labels and ids
     :rtype: Dict
@@ -119,10 +121,26 @@ def get_instances(api, **kwargs):
     instances = {}
 
     for instance_name, values in status['instances'].items():
-        instances[instance_name] = {'id': values['id'], 'label': values['label']}
+        instances[instance_name] = {'id': values['id'], 'label': values['label'], 'version': values['version']}
 
         if '-' in values['label']:
             instances[instance_name]['location'] = values['label'].split('-')[0].strip()
+
+        if show_probes:
+            for probe, probe_values in values['probes'].items():
+                probe_info = {
+                    'id': probe_values['id'], 'ip': probe, 'label': probe_values['label'],
+                    'version': probe_values['version']
+                }
+
+                if '-' in probe_values['label']:
+                    probe_info['location'] = probe_values['label'].split('-')[0].strip()
+
+                if 'probes' not in instances[instance_name]:
+                    instances[instance_name]['probes'] = [probe_info]
+                else:
+                    instances[instance_name]['probes'].append(probe_info)
+
     return instances
 
 
