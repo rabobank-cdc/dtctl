@@ -6,7 +6,7 @@ from dtctl.config.functions import set_dt_key, set_cacert, set_secure_dt_key, se
 
 @click.command('set', short_help='Set a dtctl configuration option')
 @click.argument('config-option', type=click.Choice(['secure-dtkey', 'dtkey', 'pub-dtkey', 'host', 'cacert']))
-@click.option('--value', '-v', type=click.STRING, help='Value to configure for "config-option"', required=True)
+@click.option('--value', '-v', type=click.STRING, help='Value to configure for "config-option"')
 @click.pass_obj
 def set_config(program_state, config_option, value):
     """
@@ -20,11 +20,14 @@ def set_config(program_state, config_option, value):
         dtkey           Configure the Darktrace private key insecurely NOT RECOMMENDED
         host            Configure the Darktrace host
     """
-    if config_option == 'dtkey':
-        set_dt_key(program_state.config_file)
+    if value is None and config_option != 'secure-dtkey':
+        raise SystemExit('Error: Missing option "--value" / "-v".')
 
     if config_option == 'secure-dtkey':
         set_secure_dt_key(program_state.config_file)
+
+    if config_option == 'dtkey':
+        set_dt_key(program_state.config_file)
 
     if config_option == 'pub-dtkey':
         set_dt_public_key(program_state.config_file, value)
