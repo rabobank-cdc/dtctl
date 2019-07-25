@@ -88,7 +88,7 @@ def test_details_wrong_host_argument(get_private_key):
                                  'details', 'host', '!wrong'])
 
     assert result.exit_code is not 0
-    assert 'ERROR - Hostname contains invalid characters' in result.output
+    assert 'Error: Hostname contains invalid characters' in result.output
 
 
 @patch('dtctl.cli.get_private_key')

@@ -27,7 +27,7 @@ def test_cli_missing_host(mock_load_config, mock_get_private_key):
     result = runner.invoke(cli, ['system', 'info'])
 
     assert result.exit_code != 0
-    assert 'ERROR: Host not specified or configured' in result.output
+    assert 'Error: Host not specified or configured' in result.output
 
 
 @patch('dtctl.cli.get_private_key')
@@ -38,4 +38,4 @@ def test_cli_missing_pubkey(mock_load_config, mock_get_private_key):
     result = runner.invoke(cli, ['--host', '127.0.0.1', 'system', 'info'])
 
     assert result.exit_code != 0
-    assert 'ERROR: pub-dtkey not specified or configured' in result.output
+    assert 'Error: pub-dtkey not specified or configured' in result.output

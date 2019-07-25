@@ -55,13 +55,13 @@ def cli(ctx, host, pub_dtkey, priv_dtkey, cacert, insecure, debug, config_file):
         if 'host' in config_dict:
             host = config_dict['host']
         else:
-            raise SystemExit('ERROR: Host not specified or configured')
+            raise SystemExit('Error: Host not specified or configured')
 
     if not pub_dtkey:
         if 'pub-dtkey' in config_dict:
             pub_dtkey = config_dict['pub-dtkey']
         else:
-            raise SystemExit('ERROR: pub-dtkey not specified or configured')
+            raise SystemExit('Error: pub-dtkey not specified or configured')
 
     if not cacert:
         if 'cacert' in config_dict:

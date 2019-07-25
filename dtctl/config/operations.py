@@ -40,7 +40,7 @@ def get_private_key(priv_dtkey, config_dict):
         privkey = getpass.getpass('Please provide Darktrace private key: ')
 
     if not privkey:
-        error_msg = 'ERROR: Unable to determine private key\n' \
+        error_msg = 'Error: Unable to determine private key\n' \
                     '# Please configure a private key before using dtctl\n' \
                     '# - e.g.: dtctl config set --secure-dtkey'
         raise SystemExit(error_msg)
