@@ -16,6 +16,8 @@ dtctl --host <host> --pub-dtkey <public Darktrace key> system info
 
 Alternatively, configure the host, public key and a custom certificate using `dtctl config set`
 
+```dtctl``` only works in combination with the Darktrace Unified Viewer or with an API enabled master appliance.
+
 ```dtctl``` outputs information in JSON because it is both human readable and machine parsable. If you prefer a
 different output format, you are welcome to submit a pull request.
 
