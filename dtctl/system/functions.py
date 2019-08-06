@@ -1,6 +1,6 @@
 """Functions used by the Click system subcommand"""
 import re
-from dtctl.utils.timeutils import fmttime, prstime
+from dtctl.utils.timeutils import fmttime, prstime, utc_now_timestamp
 
 
 def get_summary_statistics(api, **kwargs):
@@ -55,28 +55,38 @@ def get_usage(api, **kwargs):
     :return: Dictionary that contains parsed resource information
     """
     status_dict = api.get('/status', **kwargs)
-    usage_dict = {}
+    usage_list = []
 
     for instance_key, instance_values in status_dict['instances'].items():
-        usage_dict[instance_key] = {}
-        usage_dict[instance_key]['cpu'] = instance_values['cpu']
-        usage_dict[instance_key]['dtqueue'] = instance_values['darkflowQueue']
-        usage_dict[instance_key]['memused'] = instance_values['memoryUsed']
-        usage_dict[instance_key]['bandwidth'] = instance_values['bandwidthCurrent']
-        usage_dict[instance_key]['connectionsPerMinuteCurrent'] = instance_values['connectionsPerMinuteCurrent']
-        usage_dict[instance_key]['label'] = instance_values['label']
-        usage_dict[instance_key]['probes'] = {}
+        info = {
+            'system': instance_key,
+            'type': 'master',
+            'timestamp': utc_now_timestamp(),
+            'cpu': instance_values['cpu'],
+            'dtqueue': instance_values['darkflowQueue'],
+            'memused': instance_values['memoryUsed'],
+            'bandwidth': instance_values['bandwidthCurrent'],
+            'connectionsPerMinuteCurrent': instance_values['connectionsPerMinuteCurrent'],
+            'label': instance_values['label']
+        }
+
+        usage_list.append(info)
 
         for probe_key, probe_values in instance_values['probes'].items():
-            usage_dict[instance_key]['probes'][probe_key] = {}
-            usage_dict[instance_key]['probes'][probe_key]['label'] = probe_values['label']
-            usage_dict[instance_key]['probes'][probe_key]['bandwidthCurrent'] = probe_values['bandwidthCurrent']
-            usage_dict[instance_key]['probes'][probe_key]['memoryUsed'] = probe_values['memoryUsed']
-            usage_dict[instance_key]['probes'][probe_key]['connectionsPerMinuteCurrent'] = \
-                probe_values['connectionsPerMinuteCurrent']
-            usage_dict[instance_key]['probes'][probe_key]['cpu'] = probe_values['cpu']
+            info = {
+                'system': probe_key,
+                'type': 'probe',
+                'timestamp': utc_now_timestamp(),
+                'label': probe_values['label'],
+                'bandwidth': probe_values['bandwidthCurrent'],
+                'memused': probe_values['memoryUsed'],
+                'connectionsPerMinuteCurrent': probe_values['connectionsPerMinuteCurrent'],
+                'cpu': probe_values['cpu']
+            }
 
-    return usage_dict
+        usage_list.append(info)
+
+    return usage_list
 
 
 def get_tags(api, **kwargs):
@@ -167,8 +177,8 @@ def get_packet_loss(api, start_date, end_date):
     :type start_date: DateTime
     :param end_date: DateTime object that represents the end time for which breaches to report on
     :type end_date: DateTime
-    :return:
-    :rtype:
+    :return: JSON objects containing packet-loss information
+    :rtype: List
     """
     start_date = fmttime(start_date) if start_date else None
     end_date = fmttime(end_date) if end_date else None
@@ -176,10 +186,12 @@ def get_packet_loss(api, start_date, end_date):
     models = api.get('/models')
     packet_loss_model = None
 
+    # Unsure if for all Darktrace installations the packet loss model has the same ID
+    # therefore we loop through all models
     for model in models:
-        if model['name'] != 'System::Packet Loss':
-            continue
-        packet_loss_model = model
+        if model['name'] == 'System::Packet Loss':
+            packet_loss_model = model
+            break
 
     packet_loss_breaches = api.get('/modelbreaches', pid=packet_loss_model['pid'],
                                    starttime=start_date, endtime=end_date)
@@ -196,7 +208,7 @@ def extract_packet_loss_information(packet_loss_breaches):
     :return: Packet loss statistics per system
     :rtype: Dict
     """
-    result = {}
+    result = []
 
     host_regex = r'Host (.+?):'
     valid_ip_regex = r'\d+\.\d+\.\d+\.\d+$'
@@ -215,12 +227,12 @@ def extract_packet_loss_information(packet_loss_breaches):
                 host = re.search(host_regex, value)[1]
                 ip_address = re.search(valid_ip_regex, host)[0]
 
-                info_dict = {'date': '{0}'.format(prstime(triggered_component['time'])),
-                             'packet_loss': packet_loss_percentage,
-                             'worker_drop_rate': worker_drop_percentage}
+                info_dict = {
+                    'system': ip_address if ip_address else host,
+                    'timestamp': '{0}'.format(prstime(triggered_component['time'], True)),
+                    'packet_loss': packet_loss_percentage,
+                    'worker_drop_rate': worker_drop_percentage
+                }
 
-                if ip_address in result:
-                    result[ip_address].append(info_dict)
-                else:
-                    result[ip_address] = [info_dict]
+                result.append(info_dict)
     return result
