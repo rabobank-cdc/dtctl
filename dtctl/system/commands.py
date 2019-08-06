@@ -2,7 +2,7 @@
 import click
 from dtctl.system.functions import get_status, get_usage, get_tags, get_info, get_auditlog, \
     get_summary_statistics, get_instances, get_packet_loss
-from dtctl.utils.output import process_output
+from dtctl.utils.output import process_output, convert_json_to_log_lines
 from dtctl.utils.timeutils import determine_date_range
 
 
@@ -24,10 +24,21 @@ def status(program_state, outfile):
 
 @click.command('usage', short_help='Short usage information of all instances and probes')
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
+@click.option('--log', '-l', is_flag=True, default=False, show_default=True,
+              help='Line based output for logging purposes')
 @click.pass_obj
-def usage(program_state, outfile):
+def usage(program_state, outfile, log):
     """Short usage information of all instances and probes"""
-    process_output(get_usage(program_state.api), outfile)
+    output = get_usage(program_state.api)
+    append = False
+    to_json = True
+
+    if log:
+        append = True
+        to_json = False
+        output = convert_json_to_log_lines(output)
+
+    process_output(output, outfile, append, to_json)
 
 
 @click.command('tags', short_help='All tags configured in Darktrace')
@@ -81,12 +92,23 @@ def auditlog(program_state, offset, limit, outfile):
 @click.option('--end-date', type=click.DateTime(formats=('%d-%m-%Y',)),
               help='End date of the report.')
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
+@click.option('--log', '-l', is_flag=True, default=False, show_default=True,
+              help='Line based output for logging purposes')
 @click.pass_obj
-def packet_loss(program_state, days, start_date, end_date, outfile):
+def packet_loss(program_state, days, start_date, end_date, outfile, log):
     """Information about reported packet loss per system"""
     end_date, start_date = determine_date_range(days, end_date, start_date)
 
-    process_output(get_packet_loss(program_state.api, start_date, end_date), outfile)
+    output = get_packet_loss(program_state.api, start_date, end_date)
+    append = False
+    to_json = True
+
+    if log:
+        append = True
+        to_json = False
+        output = convert_json_to_log_lines(output)
+
+    process_output(output, outfile, append, to_json)
 
 
 @click.command('moo', hidden=True, add_help_option=False)
