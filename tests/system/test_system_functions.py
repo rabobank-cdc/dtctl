@@ -56,16 +56,25 @@ def test_get_usage(status_info):
     api.get = MagicMock(return_value=status_info)
 
     result = get_usage(api)
-    assert result['darktrace-instance-1']['cpu'] == 10
-    assert result['darktrace-instance-1']['dtqueue'] == 0
-    assert result['darktrace-instance-1']['memused'] == 10
-    assert result['darktrace-instance-1']['bandwidth'] == 1000000000
-    assert result['darktrace-instance-1']['connectionsPerMinuteCurrent'] == 100
-    assert result['darktrace-instance-1']['label'] == 'Label with a name1'
-    assert len(result['darktrace-instance-1']['probes']) == 1
-    assert result['darktrace-instance-1']['probes']['192.168.1.1']['label'] == 'Label with a name1'
-    assert result['darktrace-instance-1']['probes']['192.168.1.1']['bandwidthCurrent'] == 100000000
-    assert result['darktrace-instance-1']['probes']['192.168.1.1']['memoryUsed'] == 10
-    assert result['darktrace-instance-1']['probes']['192.168.1.1']['connectionsPerMinuteCurrent'] == 10
-    assert result['darktrace-instance-1']['probes']['192.168.1.1']['cpu'] == 2
-    assert len(result['darktrace-instance-2']['probes']) == 2
+
+    assert len(result) == 4
+
+    assert result[0]['system'] == 'darktrace-instance-1'
+    assert result[0]['type'] == 'master'
+    assert result[0]['timestamp']
+    assert result[0]['cpu'] == 10
+    assert result[0]['dtqueue'] == 0
+    assert result[0]['memused'] == 10
+    assert result[0]['bandwidth'] == 1000000000
+    assert result[0]['connectionsPerMinuteCurrent'] == 100
+    assert result[0]['label'] == 'Label with a name1'
+
+    assert result[1]['system'] == '192.168.1.1'
+    assert result[1]['type'] == 'probe'
+    assert result[1]['timestamp']
+    assert result[1]['cpu'] == 2
+    assert result[1]['memused'] == 10
+    assert result[1]['bandwidth'] == 100000000
+    assert result[1]['connectionsPerMinuteCurrent'] == 10
+    assert result[1]['label'] == 'Label with a name1'
+    assert 'dtqueue' not in result[1]  # probes don't have dtqueue

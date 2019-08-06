@@ -114,3 +114,4 @@ def test_system_usage_command(get_private_key):
     assert result.exit_code == 0
     assert 'Short usage information of all instances and probes' in result.output
     assert '-o, --outfile PATH' in result.output
+    assert '-l, --log' in result.output

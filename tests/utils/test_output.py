@@ -1,6 +1,7 @@
 import os
 import json
-from dtctl.utils.output import convert_series, process_output
+import pytest
+from dtctl.utils.output import convert_json_to_log_lines, convert_series, process_output
 
 
 def test_convert_series():
@@ -48,3 +49,67 @@ def test_process_output(tmpdir, capsys):
 
     if os.path.isfile(tmpfile):
         os.remove(tmpfile)
+
+
+def test_process_output_to_log(capsys):
+    output = [
+        "[2019-01-01T00:00:01] 1.1.1.1 key=\"value\"",
+        "[2019-01-01T00:00:02] 1.1.1.2 key=\"value\"",
+        "[2019-01-01T00:00:03] 1.1.1.3 key=\"value\"",
+        "[2019-01-01T00:00:04] 1.1.1.4 key=\"value\""
+    ]
+    append = False
+    to_json = False
+
+    process_output(output, None, to_json, append)
+
+    captured = capsys.readouterr()
+    assert '[2019-01-01T00:00:03] 1.1.1.3 key="value"' in captured.out
+
+
+def test_convert_json_to_log_lines():
+    output = [
+        {
+            "system": "system1",
+            "timestamp": "2019-01-01T00:00:01",
+            "key1": "value1",
+            "key2": "value2"
+        },
+        {
+            "system": "system2",
+            "timestamp": "2019-01-01T00:00:02",
+            "key1": "value1",
+            "key2": "value2"
+        },
+        {
+            "system": "system3",
+            "timestamp": "2019-01-01T00:00:03",
+            "key1": "value1",
+            "key2": "value2"
+        }
+    ]
+
+    failing_output = [
+        {
+            "system": "system1",
+            "timestamp": "2019-01-01T00:00:01",
+            "key1": [1, 2, 3],
+            "key2": "value2"
+        }
+    ]
+
+    with pytest.raises(TypeError) as exc_info:
+        convert_json_to_log_lines('This is not a list')
+
+    assert isinstance(exc_info.value, TypeError)
+
+    converted_output = convert_json_to_log_lines(output)
+
+    assert converted_output[0].strip() == '[2019-01-01T00:00:01] system1 key1="value1" key2="value2"'
+    assert converted_output[1].strip() == '[2019-01-01T00:00:02] system2 key1="value1" key2="value2"'
+    assert converted_output[2].strip() == '[2019-01-01T00:00:03] system3 key1="value1" key2="value2"'
+
+    with pytest.raises(TypeError) as exc_info:
+        convert_json_to_log_lines(failing_output)
+
+    assert isinstance(exc_info.value, TypeError)
