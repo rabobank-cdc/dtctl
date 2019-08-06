@@ -211,7 +211,7 @@ def extract_packet_loss_information(packet_loss_breaches):
     result = []
 
     host_regex = r'Host (.+?):'
-    valid_ip_regex = r'\d+\.\d+\.\d+\.\d+$'
+    valid_ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$'
     packet_loss_regex = r'rate above ([0-9]+\.[0-9]+)'
     worker_drop_regex = r'worker drop rate: ([0-9]+\.[0-9]+)'
 
