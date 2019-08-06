@@ -42,7 +42,7 @@ def prstime(time_to_parse, iso=False):
     """
     Helper function to convert epoch to DateTime
 
-    :param time_to_parse: Time in epoc to parse
+    :param time_to_parse: Time in epoch to parse
     :type time_to_parse: int
     :param iso: Flag to signal output format
     :type iso: Boolean
