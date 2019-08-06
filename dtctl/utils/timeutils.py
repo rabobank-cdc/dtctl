@@ -2,6 +2,16 @@
 import datetime as dt
 
 
+def utc_now_timestamp():
+    """
+    Helper function to return textual representation of utcnow()
+
+    :return: Current UTC time in textual format
+    :rtype: String
+    """
+    return dt.datetime.utcnow().isoformat()
+
+
 def determine_date_range(days, end_date, start_date):
     """
     Helper function to return correct start and end dates
@@ -28,13 +38,20 @@ def fmttime(time_to_fmt):
     return round(time_to_fmt.timestamp() * 1000)
 
 
-def prstime(time_to_parse):
+def prstime(time_to_parse, iso=False):
     """
     Helper function to convert epoch to DateTime
 
+    :param time_to_parse: Time in epoc to parse
+    :type time_to_parse: int
+    :param iso: Flag to signal output format
+    :type iso: Boolean
     :return: DateTime
     """
-    return dt.datetime.utcfromtimestamp(round(time_to_parse / 1000))
+    parsed_time = dt.datetime.utcfromtimestamp(round(time_to_parse / 1000))
+    if iso:
+        return parsed_time.isoformat()
+    return parsed_time
 
 
 def current_date():
