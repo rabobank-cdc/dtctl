@@ -1,6 +1,5 @@
 """Common functions for output related requirements"""
 import json
-from datetime import datetime as dt
 
 
 def process_output(output, outfile, append=False, to_json=True):
