@@ -93,6 +93,8 @@ class Api:
             resp.raise_for_status()
         except requests.exceptions.SSLError as err:
             raise SystemExit(err)
+        except requests.exceptions.ConnectionError as err:
+            raise SystemExit('Error - Failed to connect to {0}'.format(self.address))
         except requests.exceptions.HTTPError as err:
             raise SystemExit(err)
 
@@ -139,6 +141,8 @@ class Api:
             resp.raise_for_status()
         except requests.exceptions.SSLError as err:
             raise SystemExit(err)
+        except requests.exceptions.ConnectionError as err:
+            raise SystemExit('Error - Failed to connect to {0}'.format(self.address))
         except requests.exceptions.HTTPError as err:
             try:
                 print(json.dumps(resp.json(), indent=4), file=sys.stderr)

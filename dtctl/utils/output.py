@@ -6,7 +6,7 @@ def convert_json_to_log_lines(output, timestamp_key='timestamp', system_key='sys
     """
     Function to convert a list of JSON objects to a list containing log lines
 
-    :param output: Array of flat JSON objects (dicts within python)
+    :param output: List of flat JSON objects (dicts within python)
     :type output: List
     :param timestamp_key: The dictionary key that holds timestamp information
     :type timestamp_key: String
