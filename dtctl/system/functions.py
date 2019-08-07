@@ -230,8 +230,8 @@ def extract_packet_loss_information(packet_loss_breaches):
                 info_dict = {
                     'system': ip_address if ip_address else host,
                     'timestamp': '{0}'.format(prstime(triggered_component['time'], True)),
-                    'packet_loss': packet_loss_percentage,
-                    'worker_drop_rate': worker_drop_percentage
+                    'packet_loss': float(packet_loss_percentage),
+                    'worker_drop_rate': float(worker_drop_percentage)
                 }
 
                 result.append(info_dict)
