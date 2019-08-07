@@ -4,7 +4,7 @@
 import pandas as pd
 from pandas.io.json import json_normalize
 from dtctl.utils.timeutils import fmttime, prstime
-from dtctl.utils.output import convert_series
+from dtctl.utils.parsing import convert_series
 from dtctl.utils.reporting import format_report, device_info
 
 

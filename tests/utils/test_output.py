@@ -1,16 +1,7 @@
 import os
 import json
 import pytest
-from dtctl.utils.output import convert_json_to_log_lines, convert_series, process_output
-
-
-def test_convert_series():
-    # This function does not really convert Pandas series but only lists.
-    test_data = ['a', 'b', 'c']
-
-    assert convert_series(test_data) == 'a, b, c'
-    assert convert_series('text') is None
-    assert convert_series([]) is None
+from dtctl.utils.output import process_output
 
 
 def test_process_output(tmpdir, capsys):
@@ -67,49 +58,23 @@ def test_process_output_to_log(capsys):
     assert '[2019-01-01T00:00:03] 1.1.1.3 key="value"' in captured.out
 
 
-def test_convert_json_to_log_lines():
+def test_process_output_to_cef(capsys):
     output = [
-        {
-            "system": "system1",
-            "timestamp": "2019-01-01T00:00:01",
-            "key1": "value1",
-            "key2": "value2"
-        },
-        {
-            "system": "system2",
-            "timestamp": "2019-01-01T00:00:02",
-            "key1": "value1",
-            "key2": "value2"
-        },
-        {
-            "system": "system3",
-            "timestamp": "2019-01-01T00:00:03",
-            "key1": "value1",
-            "key2": "value2"
-        }
+        "CEF:0|DCIP|System Monitoring|1.0|100|system usage|5|start=1234567890 end=1234567890 src=10.10.10.1 "
+        "cs1Label=type cs1=probe cs2Label=label cs2=Appliance label1 cn1Label=bandwidth cn1=1000 cn2Label=cpu cn2=50",
+        "CEF:0|DCIP|System Monitoring|1.0|100|system usage|5|start=1234567890 end=1234567890 src=10.10.10.2 "
+        "cs1Label=type cs1=master cs2Label=label cs2=Appliance label2 cn1Label=bandwidth cn1=1000 cn2Label=cpu cn2=50",
     ]
+    append = False
+    to_json = False
 
-    failing_output = [
-        {
-            "system": "system1",
-            "timestamp": "2019-01-01T00:00:01",
-            "key1": [1, 2, 3],
-            "key2": "value2"
-        }
-    ]
+    process_output(output, None, to_json, append)
 
-    with pytest.raises(TypeError) as exc_info:
-        convert_json_to_log_lines('This is not a list')
-
-    assert isinstance(exc_info.value, TypeError)
-
-    converted_output = convert_json_to_log_lines(output)
-
-    assert converted_output[0].strip() == '[2019-01-01T00:00:01] system1 key1="value1" key2="value2"'
-    assert converted_output[1].strip() == '[2019-01-01T00:00:02] system2 key1="value1" key2="value2"'
-    assert converted_output[2].strip() == '[2019-01-01T00:00:03] system3 key1="value1" key2="value2"'
-
-    with pytest.raises(TypeError) as exc_info:
-        convert_json_to_log_lines(failing_output)
-
-    assert isinstance(exc_info.value, TypeError)
+    captured = capsys.readouterr()
+    print(captured.out)
+    assert 'CEF:0|DCIP|System Monitoring|1.0|100|system usage|5|' \
+           'start=1234567890 end=1234567890 src=10.10.10.1 cs1Label=type cs1=probe ' \
+           'cs2Label=label cs2=Appliance label1 cn1Label=bandwidth cn1=1000 cn2Label=cpu cn2=50' in captured.out
+    assert 'CEF:0|DCIP|System Monitoring|1.0|100|system usage|5|' \
+           'start=1234567890 end=1234567890 src=10.10.10.2 cs1Label=type cs1=master ' \
+           'cs2Label=label cs2=Appliance label2 cn1Label=bandwidth cn1=1000 cn2Label=cpu cn2=50' in captured.out
