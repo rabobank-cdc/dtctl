@@ -1,3 +1,4 @@
+"""Common functions for parsing and conversion requirements"""
 import json
 from datetime import datetime as dt
 from dtctl.utils.timeutils import fmttime
