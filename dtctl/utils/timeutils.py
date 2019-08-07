@@ -9,7 +9,7 @@ def utc_now_timestamp():
     :return: Current UTC time in textual format
     :rtype: String
     """
-    return dt.datetime.utcnow().isoformat()
+    return dt.datetime.utcnow().isoformat('T', 'seconds')
 
 
 def determine_date_range(days, end_date, start_date):
@@ -27,7 +27,7 @@ def determine_date_range(days, end_date, start_date):
     return end_date, start_date
 
 
-def fmttime(time_to_fmt):
+def fmttime(time_to_fmt, milliseconds=True):
     """
     Helper function to format datetime to epoch. If already an int, doesn't do any formatting.
 
@@ -35,7 +35,12 @@ def fmttime(time_to_fmt):
     """
     if isinstance(time_to_fmt, int):
         return time_to_fmt
-    return round(time_to_fmt.timestamp() * 1000)
+
+    if milliseconds:
+        timestamp = time_to_fmt.timestamp() * 1000
+    else:
+        timestamp = time_to_fmt.timestamp()
+    return round(timestamp)
 
 
 def prstime(time_to_parse, iso=False):
@@ -50,7 +55,7 @@ def prstime(time_to_parse, iso=False):
     """
     parsed_time = dt.datetime.utcfromtimestamp(round(time_to_parse / 1000))
     if iso:
-        return parsed_time.isoformat()
+        return parsed_time.isoformat('T', 'seconds')
     return parsed_time
 
 

@@ -74,6 +74,8 @@ def test_system_packet_loss_command(get_private_key):
     assert '--start-date [%d-%m-%Y]' in result.output
     assert '--end-date [%d-%m-%Y]' in result.output
     assert '-o, --outfile PATH' in result.output
+    assert '--log' in result.output
+    assert '--cef' in result.output
 
 
 @patch('dtctl.cli.get_private_key')
@@ -114,4 +116,5 @@ def test_system_usage_command(get_private_key):
     assert result.exit_code == 0
     assert 'Short usage information of all instances and probes' in result.output
     assert '-o, --outfile PATH' in result.output
-    assert '-l, --log' in result.output
+    assert '--log' in result.output
+    assert '--cef' in result.output

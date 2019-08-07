@@ -27,11 +27,14 @@ def test_determine_date_range():
 def test_fmttime():
     timestamp_int = 1559290405
     time_to_fmt = current_date()
-    timestamp_current_time = current_date().timestamp() * 1000
+    timestamp_current_time_milliseconds = current_date().timestamp() * 1000
+    timestamp_current_time = current_date().timestamp()
 
     assert timestamp_int == fmttime(timestamp_int)
     assert isinstance(fmttime(timestamp_int), int)
-    assert timestamp_current_time == fmttime(time_to_fmt)
+    assert timestamp_current_time_milliseconds == fmttime(time_to_fmt)
+    assert isinstance(fmttime(time_to_fmt), int)
+    assert timestamp_current_time == fmttime(time_to_fmt, False)
     assert isinstance(fmttime(time_to_fmt), int)
 
 
