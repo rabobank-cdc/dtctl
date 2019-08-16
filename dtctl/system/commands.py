@@ -3,8 +3,9 @@ import click
 from dtctl.system.functions import get_status, get_usage, get_tags, get_info, get_auditlog, \
     get_summary_statistics, get_instances, get_packet_loss
 from dtctl.utils.output import process_output
-from dtctl.utils.parsing import convert_json_to_log_lines, convert_json_to_cef
+from dtctl.utils.parsing import convert_json_to_log_lines
 from dtctl.utils.timeutils import determine_date_range
+from dtctl.utils.cef import Cef
 
 
 @click.command('info', short_help='View Darktrace system information')
@@ -44,7 +45,8 @@ def usage(program_state, outfile, log, cef):
         output = convert_json_to_log_lines(output)
 
     if cef:
-        output = convert_json_to_cef(output)
+        cef_object = Cef(device_event_class_id=100, name='System Usage')
+        output = cef_object.generate_logs(output)
 
     process_output(output, outfile, append, to_json)
 
@@ -121,7 +123,8 @@ def packet_loss(program_state, days, start_date, end_date, outfile, log, cef):
         output = convert_json_to_log_lines(output)
 
     if cef:
-        output = convert_json_to_cef(output)
+        cef_object = Cef(device_event_class_id=110, name='Packet Loss')
+        output = cef_object.generate_logs(output)
 
     process_output(output, outfile, append, to_json)
 

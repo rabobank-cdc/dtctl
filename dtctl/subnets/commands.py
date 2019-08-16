@@ -3,6 +3,8 @@ import click
 from dtctl.subnets.functions import get_subnet_list, get_aggregates, get_subnets_per_instances, \
                                     get_dhcp_stats, get_unidirectional_traffic, list_devices
 from dtctl.utils.output import process_output
+from dtctl.utils.parsing import convert_json_to_log_lines
+from dtctl.utils.cef import Cef
 
 
 @click.command('list', short_help='Lists all subnets without their meta data (IPv4 only)')
@@ -31,10 +33,29 @@ def instances(program_state, outfile):
 
 @click.command('dhcp', short_help='Metrics for DHCP tracking')
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
+@click.option('--log', is_flag=True, default=False, show_default=True,
+              help='Line based output for logging purposes')
+@click.option('--cef', is_flag=True, default=False, show_default=True,
+              help='Line based output for CEF logging purposes')
 @click.pass_obj
-def dhcp(program_state, outfile):
+def dhcp(program_state, outfile, log, cef):
     """Metrics for DHCP tracking"""
-    process_output(get_dhcp_stats(program_state.api), outfile)
+    output = get_dhcp_stats(program_state.api)
+    append = False
+    to_json = True
+
+    if log or cef:
+        append = True
+        to_json = False
+
+    if log:
+        output = convert_json_to_log_lines(output)
+
+    if cef:
+        cef_object = Cef(device_event_class_id=120, name='DHCP Quality')
+        output = cef_object.generate_logs(output)
+
+    process_output(output, outfile, append, to_json)
 
 
 @click.command('unidirectional', short_help='Metrics for unidirectional traffic')

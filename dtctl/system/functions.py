@@ -59,7 +59,8 @@ def get_usage(api, **kwargs):
 
     for instance_key, instance_values in status_dict['instances'].items():
         info = {
-            'system': instance_key,
+            'system': instance_values['hostname'],
+            'ip': instance_key,  # Due to lack of 'ip' key in status information for masters.
             'type': 'master',
             'timestamp': utc_now_timestamp(),
             'cpu': instance_values['cpu'],
@@ -74,7 +75,8 @@ def get_usage(api, **kwargs):
 
         for probe_key, probe_values in instance_values['probes'].items():
             info = {
-                'system': probe_key,
+                'system': probe_values['hostname'],
+                'ip': probe_key,
                 'type': 'probe',
                 'timestamp': utc_now_timestamp(),
                 'label': probe_values['label'],
@@ -225,10 +227,12 @@ def extract_packet_loss_information(packet_loss_breaches):
                 packet_loss_percentage = re.search(packet_loss_regex, value)[1]
                 worker_drop_percentage = re.search(worker_drop_regex, value)[1]
                 host = re.search(host_regex, value)[1]
+                hostname = '-'.join(host.split('-')[0:-1])
                 ip_address = re.search(valid_ip_regex, host)[0]
 
                 info_dict = {
-                    'system': ip_address if ip_address else host,
+                    'system': hostname,
+                    'ip': ip_address if ip_address else host,
                     'timestamp': '{0}'.format(prstime(triggered_component['time'], True)),
                     'packet_loss': float(packet_loss_percentage),
                     'worker_drop_rate': float(worker_drop_percentage)

@@ -4,6 +4,7 @@ import ipaddress
 import socket
 import netaddr
 from dtctl.utils.subnetting import is_valid_ipv4_network
+from dtctl.utils.timeutils import utc_now_timestamp
 
 
 def list_devices(api):
@@ -162,17 +163,21 @@ def get_dhcp_stats(api):
     status_dict = api.get('/status')
     all_subnets = api.get('/subnets')
     subnets_by_sid = convert_to_subnets_by_sid(all_subnets)
-    dhcp_information = {}
+    dhcp_statistics = []
 
     for instance_key, instance_values in status_dict['instances'].items():
-        dhcp_information[instance_key] = {}
-        dhcp_information[instance_key]['subnets_not_registered'] = 0
-        dhcp_information[instance_key]['subnets_seen'] = len(instance_values['subnetData'])
-        dhcp_information[instance_key]['subnets_with_dhcp_disabled'] = 0
-        dhcp_information[instance_key]['subnets_without_clients'] = 0  # For subnets that have no client devices
-        dhcp_information[instance_key]['subnets_failing_dhcp'] = 0
-        dhcp_information[instance_key]['subnets_tracking_dhcp'] = 0
-        dhcp_information[instance_key]['total_dhcp_quality'] = 0
+        dhcp_information = {
+            'system': instance_values['hostname'],
+            'ip': instance_key,  # Replace with 'ip' key once made available in status output
+            'timestamp': utc_now_timestamp(),
+            'subnets_not_registered': 0,
+            'subnets_seen': len(instance_values['subnetData']),
+            'subnets_with_dhcp_disabled': 0,
+            'subnets_without_clients': 0,
+            'subnets_failing_dhcp': 0,
+            'subnets_tracking_dhcp': 0,
+            'total_dhcp_quality': 0
+        }
 
         for subnet in instance_values['subnetData']:
             # If a seen subnet is not in the Darktrace subnet list
@@ -180,14 +185,14 @@ def get_dhcp_stats(api):
             # and usually is a result of timing issues with internal
             # Darktrace updating mechanisms
             if subnet['sid'] not in subnets_by_sid:
-                dhcp_information[instance_key]['subnets_not_registered'] += 1
+                dhcp_information['subnets_not_registered'] += 1
                 continue
 
             # Boolean value provided by Darktrace
             # False: Darktrace does not track DHCP for this subnet
             # True: Darktrace tracks DHCP for this subnet
             if not subnets_by_sid[subnet['sid']]['dhcp']:
-                dhcp_information[instance_key]['subnets_with_dhcp_disabled'] += 1
+                dhcp_information['subnets_with_dhcp_disabled'] += 1
                 continue
 
             # mostRecentDHCP can have three values
@@ -197,22 +202,24 @@ def get_dhcp_stats(api):
             #               - Because DHCP tracking is disabled (covered in statement above)
             #               - Because no client devices are inside the subnet (covered in statement below)
             if (subnet['mostRecentDHCP'] == 'Never') and subnet['clientDevices'] == 0:
-                dhcp_information[instance_key]['subnets_without_clients'] += 1
+                dhcp_information['subnets_without_clients'] += 1
                 continue
 
             # dhcpQuality is reported for subnets that have seen DHCP
             # If dhcpQuality is missing, we have a subnet with
             if 'dhcpQuality' in subnet:
-                dhcp_information[instance_key]['subnets_tracking_dhcp'] += 1
-                dhcp_information[instance_key]['total_dhcp_quality'] += int(subnet['dhcpQuality'])
+                dhcp_information['subnets_tracking_dhcp'] += 1
+                dhcp_information['total_dhcp_quality'] += int(subnet['dhcpQuality'])
             else:
-                dhcp_information[instance_key]['subnets_failing_dhcp'] += 1
+                dhcp_information['subnets_failing_dhcp'] += 1
 
-        dhcp_information[instance_key]['average_dhcp_quality'] = \
-            round(dhcp_information[instance_key]['total_dhcp_quality'] /
-                  dhcp_information[instance_key]['subnets_tracking_dhcp'])
+        dhcp_information['average_dhcp_quality'] = \
+            round(dhcp_information['total_dhcp_quality'] /
+                  dhcp_information['subnets_tracking_dhcp'])
 
-    return dhcp_information
+        dhcp_statistics.append(dhcp_information)
+
+    return dhcp_statistics
 
 
 def get_summary(api):
