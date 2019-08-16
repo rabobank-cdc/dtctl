@@ -59,7 +59,7 @@ def test_get_usage(status_info):
 
     assert len(result) == 4
 
-    assert result[0]['system'] == 'darktrace-instance-1'
+    assert result[0]['system'] == 'darktrace-hostname-1'
     assert result[0]['type'] == 'master'
     assert result[0]['timestamp']
     assert result[0]['cpu'] == 10
@@ -69,7 +69,8 @@ def test_get_usage(status_info):
     assert result[0]['connectionsPerMinuteCurrent'] == 100
     assert result[0]['label'] == 'Label with a name1'
 
-    assert result[1]['system'] == '192.168.1.1'
+    assert result[1]['system'] == 'probe-hostname-1'
+    assert result[1]['ip'] == '192.168.1.1'
     assert result[1]['type'] == 'probe'
     assert result[1]['timestamp']
     assert result[1]['cpu'] == 2

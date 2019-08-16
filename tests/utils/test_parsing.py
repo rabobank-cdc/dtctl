@@ -1,5 +1,5 @@
 import pytest
-from dtctl.utils.parsing import convert_json_to_log_lines, convert_json_to_cef, convert_series
+from dtctl.utils.parsing import convert_json_to_log_lines, convert_series
 
 
 @pytest.fixture
@@ -53,31 +53,6 @@ def test_convert_series():
     assert convert_series(test_data) == 'a, b, c'
     assert convert_series('text') is None
     assert convert_series([]) is None
-
-
-def test_convert_json_to_cef(correct_output, failing_output):
-    with pytest.raises(TypeError) as exc_info:
-        convert_json_to_cef('This is not a list')
-
-    assert isinstance(exc_info.value, TypeError)
-
-    converted_output = convert_json_to_cef(correct_output)
-
-    assert converted_output[0].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|100|system usage|5|' \
-                                          'start=1546297201 end=1546297201 src=system1 ' \
-                                          'cs1Label=key1 cs1=value1 cn1Label=key2 cn1=2'
-    assert converted_output[1].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|100|system usage|5|' \
-                                          'start=1546297202 end=1546297202 src=system2 ' \
-                                          'cs1Label=key1 cs1=value1 cf1Label=key2 cf1=2.123'
-    assert converted_output[3].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|100|system usage|5|' \
-                                          'start=1546297204 end=1546297204 src=system4 ' \
-                                          'cs1Label=key1 cs1=value1 cs2Label=key2 cs2=value2 ' \
-                                          'cn1Label=key3 cn1=3 cn2Label=key4 cn2=4'
-
-    with pytest.raises(TypeError) as exc_info:
-        convert_json_to_cef(failing_output)
-
-    assert isinstance(exc_info.value, TypeError)
 
 
 def test_convert_json_to_log_lines(correct_output, failing_output):
