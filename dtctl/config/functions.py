@@ -88,4 +88,7 @@ def set_dt_host(config_file, host):
     :param config_file: Path to config file
     :return: None
     """
+    if not (host.startswith('https://') or host.startswith('http://')):
+        host = 'https://{0}'.format(host)
+
     set_config_key(config_file, 'host', host)
