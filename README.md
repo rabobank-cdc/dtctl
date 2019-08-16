@@ -14,12 +14,17 @@ dtctl config set secure-dtkey
 dtctl --host <host> --pub-dtkey <public Darktrace key> system info
 ```
 
-Alternatively, configure the host, public key and a custom certificate using `dtctl config set`
+The Darktrace private key can be generated on the Darktrace configuration page. On the configuration page you 
+can also find the corresponding public key.
 
-```dtctl``` only works in combination with the Darktrace Unified Viewer or with an API enabled master appliance.
+Alternatively, configure the host, public key and a custom certificate using the various `dtctl config set` 
+commands
 
 ```dtctl``` outputs information in JSON because it is both human readable and machine parsable. If you prefer a
 different output format, you are welcome to submit a pull request.
+
+*Note:*
+```dtctl``` only works in combination with the Darktrace Unified Viewer or with an API enabled master appliance.
 
 ### Prerequisites
 
