@@ -57,10 +57,10 @@ def get_usage(api, **kwargs):
     status_dict = api.get('/status', **kwargs)
     usage_list = []
 
-    for instance_key, instance_values in status_dict['instances'].items():
+    for _instance_key, instance_values in status_dict['instances'].items():
         info = {
             'system': instance_values['hostname'],
-            'ip': instance_key,  # Due to lack of 'ip' key in status information for masters.
+            # 'ip': instance_key,  # instance_key is not an IP for masters. Replace when 'ip' key is made available
             'type': 'master',
             'timestamp': utc_now_timestamp(),
             'cpu': instance_values['cpu'],

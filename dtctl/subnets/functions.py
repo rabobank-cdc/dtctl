@@ -165,10 +165,10 @@ def get_dhcp_stats(api):
     subnets_by_sid = convert_to_subnets_by_sid(all_subnets)
     dhcp_statistics = []
 
-    for instance_key, instance_values in status_dict['instances'].items():
+    for _instance_key, instance_values in status_dict['instances'].items():
         dhcp_information = {
             'system': instance_values['hostname'],
-            'ip': instance_key,  # Replace with 'ip' key once made available in status output
+            # 'ip': instance_key,  # Replace with 'ip' key once made available in status output
             'timestamp': utc_now_timestamp(),
             'subnets_not_registered': 0,
             'subnets_seen': len(instance_values['subnetData']),

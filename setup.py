@@ -4,7 +4,7 @@ setup(
     # mandatory
     name='dtctl',
     # mandatory
-    version='0.2.4',
+    version='0.2.5',
     # mandatory
     author_email='daan@vynder.io',
     packages=find_packages(),

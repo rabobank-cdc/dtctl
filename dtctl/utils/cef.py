@@ -9,15 +9,15 @@ class Cef:
         'System Usage': {
             'type': 'cs1Label',
             'label': 'cs2Label',
-            'bandwidth': 'bytesIn',
+            'bandwidth': 'in',
             'memused': 'cn1Label',
             'connectionsPerMinuteCurrent': 'cn2Label',
             'cpu': 'cn3Label',
             'dtqueue': 'flexNumber1Label'
         },
         'Packet Loss': {
-            'packet_loss': 'cf1Label',
-            'worker_drop_rate': 'cf2Label'
+            'packet_loss': 'cfp1Label',
+            'worker_drop_rate': 'cfp2Label'
         },
         'DHCP Quality': {
             'subnets_tracking_dhcp': 'cn1Label',
@@ -58,11 +58,11 @@ class Cef:
         """
         timestamp = dt.strptime(json_object.pop(timestamp_key), '%Y-%m-%dT%H:%M:%S')
         system_name = json_object.pop(system_key)
-        ip_address = json_object.pop('ip')
+        ip_address = json_object.pop('ip', None)
 
         # CEF "Header" and default fields
-        line = 'CEF:{version}|{vendor}|{product}|{device_version}|{class_id}|{name}|{severity}|start={ts} end={ts} ' \
-               'src={src} deviceExternalId={system} deviceAddress={src} '\
+        line = 'CEF:{version}|{vendor}|{product}|{device_version}|{class_id}|{name}|{severity}|end={ts} ' \
+               'deviceExternalId={system} '\
             .format(
                 version=self.version,
                 vendor=self.vendor,
@@ -72,9 +72,11 @@ class Cef:
                 name=self.name,
                 severity=self.severity,
                 ts=timestamp,
-                src=ip_address,  # For time being because an 'ip' key is not available
                 system=system_name
             )
+
+        if ip_address:
+            line += 'dvc={ip} '.format(ip=ip_address)
 
         for key, value in json_object.items():
             if key not in self.MAPPING[self.name]:
