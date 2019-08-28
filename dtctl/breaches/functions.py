@@ -188,10 +188,11 @@ def report_breaches_brief(program_state, start_date, end_date, output_file, temp
     breaches_df['enhanced'] = breaches_df['model.tags'].map(has_enhanced_tag)
     breaches_df['acknowledged'] = breaches_df['acknowledged'].map(lambda x: 1 if x else 0)
     breaches_df['tags'] = breaches_df['model.tags'].map(convert_series)
+    breaches_df['time'] = breaches_df['time'].map(prstime)
     rename_mapping = {'model.name': 'model_name'}
     breaches_df.rename(columns=rename_mapping, inplace=True)
 
-    columns = ['region', 'hostname', 'model_name', 'score', 'category', 'enhanced', 'acknowledged', 'tags']
+    columns = ['region', 'hostname', 'model_name', 'score', 'category', 'enhanced', 'acknowledged', 'tags', 'time']
 
     format_report(breaches_df[columns], output_file, template, output_format)
 
