@@ -1,5 +1,6 @@
 """Common functions for DateTime related actions"""
 import datetime as dt
+from datetime import timezone
 
 
 def utc_now_timestamp():
@@ -37,9 +38,11 @@ def fmttime(time_to_fmt, milliseconds=True):
         return time_to_fmt
 
     if milliseconds:
-        timestamp = time_to_fmt.timestamp() * 1000
+        # Replace timezone to ensure our naive dt object uses utc
+        timestamp = time_to_fmt.replace(tzinfo=timezone.utc).timestamp() * 1000
     else:
-        timestamp = time_to_fmt.timestamp()
+        # Replace timezone to ensure our naive dt object uses utc
+        timestamp = time_to_fmt.replace(tzinfo=timezone.utc).timestamp()
     return round(timestamp)
 
 

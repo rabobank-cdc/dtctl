@@ -1,5 +1,6 @@
 import datetime as dt
 import pytest
+from datetime import timezone
 from dtctl.utils.timeutils import determine_date_range, fmttime, prstime, current_date, days_to_timedelta
 
 
@@ -27,8 +28,8 @@ def test_determine_date_range():
 def test_fmttime():
     timestamp_int = 1559290405
     time_to_fmt = current_date()
-    timestamp_current_time_milliseconds = current_date().timestamp() * 1000
-    timestamp_current_time = current_date().timestamp()
+    timestamp_current_time_milliseconds = current_date().replace(tzinfo=timezone.utc).timestamp() * 1000
+    timestamp_current_time = current_date().replace(tzinfo=timezone.utc).timestamp()
 
     assert timestamp_int == fmttime(timestamp_int)
     assert isinstance(fmttime(timestamp_int), int)
