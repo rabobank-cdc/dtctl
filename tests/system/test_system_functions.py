@@ -57,7 +57,7 @@ def test_get_usage(status_info):
 
     result = get_usage(api)
 
-    assert len(result) == 4
+    assert len(result) == 5
 
     assert result[0]['system'] == 'darktrace-hostname-1'
     assert result[0]['type'] == 'master'

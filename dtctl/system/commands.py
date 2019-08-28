@@ -1,7 +1,7 @@
 # pylint: disable=C0111
 import click
 from dtctl.system.functions import get_status, get_usage, get_tags, get_info, get_auditlog, \
-    get_summary_statistics, get_instances, get_packet_loss
+    get_summary_statistics, get_instances, get_packet_loss, get_system_issues
 from dtctl.utils.output import process_output
 from dtctl.utils.parsing import convert_json_to_log_lines
 from dtctl.utils.timeutils import determine_date_range
@@ -124,6 +124,41 @@ def packet_loss(program_state, days, start_date, end_date, outfile, log, cef):
 
     if cef:
         cef_object = Cef(device_event_class_id=110, name='Packet Loss')
+        output = cef_object.generate_logs(output)
+
+    process_output(output, outfile, append, to_json)
+
+
+@click.command('issues', short_help='View Darktrace system issues')
+@click.option('--days', '-d', default=7, type=click.INT,
+              help='Number of days in the past for the start date of the report.')
+@click.option('--start-date', type=click.DateTime(formats=('%d-%m-%Y',)),
+              help='Start date of the report. (overwrites the "--days" flag)')
+@click.option('--end-date', type=click.DateTime(formats=('%d-%m-%Y',)),
+              help='End date of the report.')
+@click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
+@click.option('--log', is_flag=True, default=False, show_default=True,
+              help='Line based output for logging purposes')
+@click.option('--cef', is_flag=True, default=False, show_default=True,
+              help='Line based output for CEF logging purposes')
+@click.pass_obj
+def issues(program_state, days, start_date, end_date, outfile, log, cef):
+    """Information about Darktrace system issues"""
+    end_date, start_date = determine_date_range(days, end_date, start_date)
+
+    output = get_system_issues(program_state.api, start_date, end_date)
+    append = False
+    to_json = True
+
+    if log or cef:
+        append = True
+        to_json = False
+
+    if log:
+        output = convert_json_to_log_lines(output)
+
+    if cef:
+        cef_object = Cef(device_event_class_id=130, name='System Issue')
         output = cef_object.generate_logs(output)
 
     process_output(output, outfile, append, to_json)

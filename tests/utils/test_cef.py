@@ -145,7 +145,6 @@ def test_generate_logs_for_dhcp():
     output = [
         {
             "system": "system1",
-            "ip": "10.0.0.1",
             "timestamp": "2019-01-01T01:01:01",
             "subnets_not_registered": 0,
             "subnets_seen": 10,
@@ -155,15 +154,35 @@ def test_generate_logs_for_dhcp():
             "subnets_tracking_dhcp": 4,
             "total_dhcp_quality": 100,
             "average_dhcp_quality": 25
-
         }
     ]
 
     cef_logging = cef.generate_logs(output)
     assert cef_logging[0].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|120|DHCP Quality|4|' \
-                                     'end=2019-01-01 01:01:01 deviceExternalId=system1 dvc=10.0.0.1 ' \
+                                     'end=2019-01-01 01:01:01 deviceExternalId=system1 ' \
                                      'cn1Label=subnets_tracking_dhcp cn1=4 cn2Label=total_dhcp_quality cn2=100 ' \
                                      'cn3Label1=average_dhcp_quality cn31=25'
+    assert 'dvc=' not in cef_logging[0]
+
+    with pytest.raises(TypeError) as exc_info:
+        cef.generate_logs('Not a list')
+    assert isinstance(exc_info.value, TypeError)
+
+
+def test_generate_logs_for_system_issue():
+    cef = Cef(130, 'System Issue', 5)
+    output = [
+        {
+            "system": "system1",
+            "timestamp": "2019-01-01T01:01:01",
+            "message": "Probe 10.0.0.1 has problem x",
+        }
+    ]
+
+    cef_logging = cef.generate_logs(output)
+    assert cef_logging[0].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|130|System Issue|5|' \
+                                     'end=2019-01-01 01:01:01 deviceExternalId=system1 ' \
+                                     'msg=Probe 10.0.0.1 has problem x'
 
     with pytest.raises(TypeError) as exc_info:
         cef.generate_logs('Not a list')
@@ -172,10 +191,11 @@ def test_generate_logs_for_dhcp():
 
 def test_cef_mapping():
     cef = Cef(100, 'System Usage')
-    assert len(cef.MAPPING) == 3
+    assert len(cef.MAPPING) == 4
     assert len(cef.MAPPING['System Usage']) == 7
     assert len(cef.MAPPING['Packet Loss']) == 2
     assert len(cef.MAPPING['DHCP Quality']) == 3
+    assert len(cef.MAPPING['System Issue']) == 1
 
     assert cef.MAPPING['System Usage']['type'] == 'cs1Label'
     assert cef.MAPPING['System Usage']['label'] == 'cs2Label'
@@ -191,3 +211,5 @@ def test_cef_mapping():
     assert cef.MAPPING['DHCP Quality']['subnets_tracking_dhcp'] == 'cn1Label'
     assert cef.MAPPING['DHCP Quality']['total_dhcp_quality'] == 'cn2Label'
     assert cef.MAPPING['DHCP Quality']['average_dhcp_quality'] == 'cn3Label1'
+
+    assert cef.MAPPING['System Issue']['message'] == 'msg'

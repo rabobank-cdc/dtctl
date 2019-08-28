@@ -74,6 +74,13 @@ def get_usage(api, **kwargs):
         usage_list.append(info)
 
         for probe_key, probe_values in instance_values['probes'].items():
+            # In case a probe has errors, we skip from calculating usage
+            try:
+                if probe_values['error']:
+                    continue
+            except KeyError:
+                pass
+
             info = {
                 'system': probe_values['hostname'],
                 'ip': probe_key,
@@ -86,7 +93,7 @@ def get_usage(api, **kwargs):
                 'cpu': probe_values['cpu']
             }
 
-        usage_list.append(info)
+            usage_list.append(info)
 
     return usage_list
 
@@ -140,6 +147,13 @@ def get_instances(api, show_probes, **kwargs):
 
         if show_probes:
             for probe, probe_values in values['probes'].items():
+                # In case a probe has errors, we skip further processing
+                try:
+                    if probe_values['error']:
+                        continue
+                except KeyError:
+                    pass
+
                 probe_info = {
                     'id': probe_values['id'], 'ip': probe, 'label': probe_values['label'],
                     'version': probe_values['version']
@@ -239,4 +253,81 @@ def extract_packet_loss_information(packet_loss_breaches):
                 }
 
                 result.append(info_dict)
+    return result
+
+
+def get_system_issues(api, start_date, end_date):
+    """
+    View Darktrace system issues by querying the system::issue model
+
+    :param api: Darktrace API object with initialized config values
+    :type api: Api
+    :param start_date: DateTime object that represents the start time for which breaches to report on
+    :type start_date: DateTime
+    :param end_date: DateTime object that represents the end time for which breaches to report on
+    :type end_date: DateTime
+    :return: JSON objects containing packet-loss information
+    :rtype: List
+    """
+    start_date = fmttime(start_date) if start_date else None
+    end_date = fmttime(end_date) if end_date else None
+
+    status = api.get('/status')
+    models = api.get('/models')
+    system_issue_model = None
+
+    # Unsure if for all Darktrace installations the packet loss model has the same ID
+    # therefore we loop through all models
+    for model in models:
+        if model['name'] == 'System::System':
+            system_issue_model = model
+            break
+
+    system_issue_breaches = api.get('/modelbreaches', pid=system_issue_model['pid'],
+                                    starttime=start_date, endtime=end_date)
+
+    return extract_system_issue_information(system_issue_breaches, status)
+
+
+def extract_system_issue_information(system_issue_breaches, status):
+    """
+    Extract system issue information from trigger values in breaches
+
+    :param system_issue_breaches: Breaches from the system model
+    :type system_issue_breaches: List
+    :param status: Darktrace status information
+    :type status: Dict
+    :return: Identified system issues
+    :rtype: Dict
+    """
+    result = []
+
+    # valid_ip_regex = r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'
+
+    try:
+        unified_view_hostname = status['hostname']
+    except KeyError:
+        unified_view_hostname = 'unknown'
+
+    for breach in system_issue_breaches:
+        for triggered_component in breach['triggeredComponents']:
+            for triggered_filter in triggered_component['triggeredFilters']:
+                if triggered_filter['comparatorType'] == 'display' or triggered_filter['filterType'] != 'Event details':
+                    continue
+
+                value = triggered_filter['trigger']['value']
+                # Currently not using this as it is most likely the source
+                # of a faulty probe or master and not the source of the
+                # originating device
+                # ip_address = re.search(valid_ip_regex, value)[0]
+
+                info_dict = {
+                    'system': unified_view_hostname,
+                    'timestamp': '{0}'.format(prstime(triggered_component['time'], True)),
+                    'message': value
+                }
+
+                result.append(info_dict)
+                break
+
     return result

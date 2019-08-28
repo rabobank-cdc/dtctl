@@ -23,6 +23,9 @@ class Cef:
             'subnets_tracking_dhcp': 'cn1Label',
             'total_dhcp_quality': 'cn2Label',
             'average_dhcp_quality': 'cn3Label1'
+        },
+        'System Issue': {
+            'message': 'msg'
         }
     }
 
