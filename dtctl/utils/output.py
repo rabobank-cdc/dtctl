@@ -18,7 +18,7 @@ def process_output(output, outfile, append=False, to_json=True):
     :rtype: None
     """
     if not output:
-        raise SystemExit('Error: No output to write or display')
+        raise SystemExit('No output to write or display')
 
     # Process the output for when an outfile is specified
     if outfile:
