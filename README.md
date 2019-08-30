@@ -62,6 +62,11 @@ and just run
 dtctl 
 ```
 
+*Note:* 
+On Windows there could be issues with dtctl to be not in a user's %PATH% variable. Most likely
+ due to venv particulars. Ensure that the python "Scripts" directory containing the dtct stubs 
+ is in your path.
+
 ## Docker
 A Docker image is made available for getting started with dtctl. If you want to make use of a
 configuration file, make sure you mount a volume and specify the config file (if not mounted
