@@ -6,6 +6,7 @@ from dtctl.utils.output import process_output
 from dtctl.utils.parsing import convert_json_to_log_lines
 from dtctl.utils.timeutils import determine_date_range
 from dtctl.utils.cef import Cef
+from dtctl.utils.clickutils import OptionMutex
 
 
 @click.command('info', short_help='View Darktrace system information')
@@ -27,8 +28,10 @@ def status(program_state, outfile):
 @click.command('usage', short_help='Short usage information of all instances and probes')
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
 @click.option('--log', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['cef'],
               help='Line based output for logging purposes')
 @click.option('--cef', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['log'],
               help='Line based output for CEF logging purposes')
 @click.pass_obj
 def usage(program_state, outfile, log, cef):
@@ -103,8 +106,10 @@ def auditlog(program_state, offset, limit, outfile):
               help='End date of the report.')
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
 @click.option('--log', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['cef'],
               help='Line based output for logging purposes')
 @click.option('--cef', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['log'],
               help='Line based output for CEF logging purposes')
 @click.pass_obj
 def packet_loss(program_state, days, start_date, end_date, outfile, log, cef):
@@ -138,8 +143,10 @@ def packet_loss(program_state, days, start_date, end_date, outfile, log, cef):
               help='End date of the report.')
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
 @click.option('--log', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['cef'],
               help='Line based output for logging purposes')
 @click.option('--cef', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['log'],
               help='Line based output for CEF logging purposes')
 @click.pass_obj
 def issues(program_state, days, start_date, end_date, outfile, log, cef):

@@ -8,6 +8,7 @@ from dtctl.models.functions import get_autoupdatable, get_pending_updates, get_u
 from dtctl.models.model_differ import get_update_diffs
 from dtctl.utils.output import process_output
 from dtctl.utils.timeutils import determine_date_range
+from dtctl.utils.clickutils import OptionMutex
 
 
 @click.command('select', short_help='View models based on top-level key value pairs')
@@ -39,11 +40,12 @@ def select_model(program_state, selectors, outfile):
 
 
 @click.command('list', short_help='List models')
-@click.option('--enhanced-only', '-e', help='Only list models with "*Enhanced*" tags', is_flag=True)
+@click.option('--enhanced-only', '-e', cls=OptionMutex, not_required_if=['tag'],
+              help='Only list models with "*Enhanced*" tags', is_flag=True)
 @click.option('--active-only', '-a', help='Only list models that are active', is_flag=True)
 @click.option('--with-components', '-w', help='List models and their components', is_flag=True)
-@click.option('--tag', '-t', type=click.STRING, help='List models for specified tag (case insensitive). '
-                                                     'Ignored when --enhanced-only is given')
+@click.option('--tag', '-t', cls=OptionMutex, not_required_if=['enhanced-only'],
+              type=click.STRING, help='List models for specified tag (case insensitive). ')
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
 @click.pass_obj
 def list_models(program_state, enhanced_only, active_only, with_components, tag, outfile):

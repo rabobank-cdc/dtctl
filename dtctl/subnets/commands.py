@@ -5,6 +5,7 @@ from dtctl.subnets.functions import get_subnet_list, get_aggregates, get_subnets
 from dtctl.utils.output import process_output
 from dtctl.utils.parsing import convert_json_to_log_lines
 from dtctl.utils.cef import Cef
+from dtctl.utils.clickutils import OptionMutex
 
 
 @click.command('list', short_help='Lists all subnets without their meta data (IPv4 only)')
@@ -34,8 +35,10 @@ def instances(program_state, outfile):
 @click.command('dhcp', short_help='Metrics for DHCP tracking')
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
 @click.option('--log', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['cef'],
               help='Line based output for logging purposes')
 @click.option('--cef', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['log'],
               help='Line based output for CEF logging purposes')
 @click.pass_obj
 def dhcp(program_state, outfile, log, cef):
