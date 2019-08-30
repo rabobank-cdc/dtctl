@@ -26,9 +26,9 @@ def test_intelfeed_add_command(get_private_key):
     result = runner.invoke(cli, ['-h', '_', '-p', '_', 'intelfeed', 'add', '--help'])
 
     assert result.exit_code == 0
-    assert "Add an entry to Darktrace's intelligence feed (Watchlist)" in result.output
-    assert 'add [OPTIONS] ENTRY' in result.output
-    assert re.search(r'ENTRY\s+Hostname', result.output)
+    assert "Add entries to Darktrace's intelligence feed (Watchlist)" in result.output
+    assert '-v, --value TEXT' in result.output
+    assert '-i, --infile PATH' in result.output
 
 
 @patch('dtctl.cli.get_private_key')

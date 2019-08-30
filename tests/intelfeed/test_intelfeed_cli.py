@@ -26,9 +26,9 @@ def test_intelfeed_wrong_subcommand(get_private_key):
 
 
 @patch('dtctl.cli.get_private_key')
-def test_intelfeed_missing_add_argument(get_private_key):
+def test_intelfeed_missing_add_option(get_private_key):
     get_private_key.return_value = ''
     result = runner.invoke(cli, ['-h', 'http://localhost', '-p', 'pubkey', '-s', 'privkey', 'intelfeed', 'add'])
 
     assert result.exit_code is not 0
-    assert 'Error: Missing argument "ENTRY".' in result.output
+    assert 'Error: Please provide an input option' in result.output
