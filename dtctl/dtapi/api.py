@@ -76,7 +76,7 @@ class Api:
         session = requests.Session()
 
         if self.debug:
-            print(prepped.url)
+            print_debug_message(prepped)
 
         if self.ca_cert and os.path.exists(self.ca_cert):
             verify = self.ca_cert
@@ -94,7 +94,7 @@ class Api:
         except requests.exceptions.SSLError as err:
             raise SystemExit(err)
         except requests.exceptions.ConnectionError as err:
-            raise SystemExit('Error - Failed connecting to {0}'.format(self.address))
+            raise SystemExit('Error: Failed connecting to {0}'.format(self.address))
         except requests.exceptions.HTTPError as err:
             raise SystemExit(err)
 
@@ -129,7 +129,7 @@ class Api:
         session = requests.Session()
 
         if self.debug:
-            print(prepped.url)
+            print_debug_message(prepped)
 
         if self.ca_cert and os.path.exists(self.ca_cert):
             verify = self.ca_cert
@@ -142,7 +142,7 @@ class Api:
         except requests.exceptions.SSLError as err:
             raise SystemExit(err)
         except requests.exceptions.ConnectionError as err:
-            raise SystemExit('Error - Failed connecting to {0}'.format(self.address))
+            raise SystemExit('Error: Failed connecting to {0}'.format(self.address))
         except requests.exceptions.HTTPError as err:
             try:
                 print(json.dumps(resp.json(), indent=4), file=sys.stderr)
@@ -157,3 +157,28 @@ class Api:
             if '<title>Darktrace | Login</title>' in body:
                 raise SystemExit('API endpoint not supported')
             return body
+
+
+def make_curl_command(prepared_request):
+    """
+    Turn a prepared Request into a curl command.
+    Generally used for debugging purposes
+
+    :param prepared_request: Prepared Request
+    :type prepared_request: Request
+    :return: Curl command string
+    :rtype: String
+    """
+    command = "curl -i -X {method} -H {headers} --insecure -d \"{data}\" \"{uri}\""
+    method = prepared_request.method
+    uri = prepared_request.url
+    data = prepared_request.body
+    headers = ['"{0}: {1}"'.format(key, value) for key, value in prepared_request.headers.items()]
+    headers = " -H ".join(headers)
+    return command.format(method=method, headers=headers, data=data, uri=uri)
+
+
+def print_debug_message(prepared_request):
+    print('Request URL:\n[-] {0}'.format(prepared_request.url))
+    print('Test command:\n[-] {0}'.format(make_curl_command(prepared_request)))
+    print()
