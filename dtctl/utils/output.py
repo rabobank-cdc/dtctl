@@ -1,5 +1,6 @@
 """Common functions for output related requirements"""
 import json
+import click
 
 
 def process_output(output, outfile, append=False, to_json=True):
@@ -18,6 +19,9 @@ def process_output(output, outfile, append=False, to_json=True):
     :rtype: None
     """
     if not output:
+        # We raise it as SystemExit instead of click.UsageError
+        # because it is not necessarily an error to not have output
+        # however, we do want an exit code != 0
         raise SystemExit('No output to write or display')
 
     # Process the output for when an outfile is specified
@@ -43,21 +47,3 @@ def process_output(output, outfile, append=False, to_json=True):
     else:
         print(output)
 
-
-def make_curl_command(prepared_request):
-    """
-    Turn a prepared Request into a curl command.
-    Generally used for debugging purposes
-
-    :param prepared_request: Prepared Request
-    :type prepared_request: Request
-    :return: Curl command string
-    :rtype: String
-    """
-    command = "curl -i -X {method} -H {headers} --insecure -d \"{data}\" \"{uri}\""
-    method = prepared_request.method
-    uri = prepared_request.url
-    data = prepared_request.body
-    headers = ['"{0}: {1}"'.format(key, value) for key, value in prepared_request.headers.items()]
-    headers = " -H ".join(headers)
-    return command.format(method=method, headers=headers, data=data, uri=uri)

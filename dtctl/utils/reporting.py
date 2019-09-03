@@ -2,6 +2,7 @@
 """Common functions for reporting requirements"""
 import openpyxl
 import openpyxl.utils
+import click
 from openpyxl import styles
 from openpyxl import load_workbook
 from openpyxl.worksheet import table
@@ -32,7 +33,7 @@ def format_report(breaches_df, output_file, template, output_format):
     if template:
         work_book = load_workbook(template)
         if 'RawData' not in work_book.sheetnames:
-            raise SystemExit('No sheet with the name "RawData" found.')
+            raise click.UsageError('No sheet with the name "RawData" found.')
         work_sheet = work_book.get_sheet_by_name('RawData')
 
         # Get maximum nr of rows currently in the sheet
@@ -48,7 +49,7 @@ def format_report(breaches_df, output_file, template, output_format):
         # check to ensure template has same columns as dataframe. Otherwise
         # appending creates weird results.
         if not set(column_names) == set(df_columns):
-            raise SystemExit('Template file has different columns than requested report\n'
+            raise click.UsageError('Template file has different columns than requested report\n'
                              'Expected columns: {0}'.format(', '.join(df_columns)))
 
         table_ref = get_table_ref(work_sheet)  # Returns None if no table is found

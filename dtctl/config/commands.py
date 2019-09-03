@@ -21,7 +21,7 @@ def set_config(program_state, config_option, value):
         host            Configure the Darktrace host
     """
     if value is None and config_option != 'secure-dtkey':
-        raise SystemExit('Error: Missing option "--value" / "-v".')
+        raise click.UsageError('Missing option "--value" / "-v".')
 
     if config_option == 'secure-dtkey':
         set_secure_dt_key(program_state.config_file)

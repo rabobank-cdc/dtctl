@@ -3,6 +3,7 @@ import os
 import sys
 import json
 import getpass
+import click
 from pathlib import Path
 from dtctl.utils.crypto import decrypt
 
@@ -40,10 +41,10 @@ def get_private_key(priv_dtkey, config_dict):
         privkey = getpass.getpass('Please provide Darktrace private key: ')
 
     if not privkey:
-        error_msg = 'Error: Unable to determine private key\n' \
+        error_msg = 'Unable to determine private key\n' \
                     '# Please configure a private key before using dtctl\n' \
                     '# - e.g.: dtctl config set --secure-dtkey'
-        raise SystemExit(error_msg)
+        raise click.UsageError(error_msg)
 
     return privkey
 
@@ -62,7 +63,7 @@ def load_config(config_file):
             try:
                 config = json.load(infile)
             except json.JSONDecodeError:
-                raise SystemExit('Unable to parse config file\n{0}'.format(config_file))
+                raise click.UsageError('Unable to parse config file\n{0}'.format(config_file))
 
     return config
 
@@ -96,7 +97,7 @@ def set_config_key(config_file, key, value):
     try:
         config[key] = value
     except KeyError:
-        raise SystemExit('Mangled config file. Key: {0}'.format(key))
+        raise click.UsageError('Mangled config file. Key: {0}'.format(key))
 
     save_config(config_file, config)
 

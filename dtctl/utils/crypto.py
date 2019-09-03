@@ -1,4 +1,5 @@
 """Common functions for cryptography"""
+import click
 from base64 import b64encode, b64decode
 from Cryptodome.Cipher import AES
 from Cryptodome.Util import Padding
@@ -60,5 +61,5 @@ def decrypt(pass_phrase, cipher_text):
         body = Padding.unpad(cipher.decrypt(body), block_size).decode('utf-8')
     except ValueError:
         # most likely a padding error which suggests incorrect password
-        raise SystemExit('Password incorrect')
+        raise click.UsageError('Password incorrect')
     return body

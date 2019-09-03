@@ -58,7 +58,7 @@ def post(program_state, endpoint, body, outfile):
     parsed_endpoint = urlparse(endpoint)
 
     if '=' not in body:
-        raise SystemExit('Invalid POST body.\nBody must be of format key=value')
+        raise click.UsageError('Invalid POST body. Body must be of format key=value')
 
     key, value = body.split('=')
 

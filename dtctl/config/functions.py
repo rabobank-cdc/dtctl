@@ -65,7 +65,7 @@ def set_secure_dt_key(config_file):
     verification_password = getpass.getpass('Retype password: ')
 
     if not password == verification_password:
-        raise SystemExit('Error: Passwords did not match')
+        raise click.UsageError('Passwords did not match')
 
     encrypted_value = encrypt(password, privkey)
     set_config_key(config_file, 'secure-dtkey', encrypted_value)

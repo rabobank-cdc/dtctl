@@ -38,7 +38,7 @@ def device_details(program_state, did, days, start_date, end_date, outfile):
 def host_details(program_state, hostname, days, start_date, end_date, outfile):
     """Time sorted list of connections and events for an EXTERNAL host"""
     if not (is_valid_domain(hostname) or is_valid_hostname(hostname)):
-        raise SystemExit('Error: Hostname contains invalid characters')
+        raise click.UsageError('Hostname contains invalid characters')
 
     end_date, start_date = determine_date_range(days, end_date, start_date)
     output = get_host_details(program_state.api, hostname, start_date, end_date)

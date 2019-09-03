@@ -1,4 +1,5 @@
 import pytest
+from click import UsageError
 from dtctl.utils.crypto import encrypt, decrypt
 
 
@@ -18,8 +19,8 @@ def test_decrypt():
 
     assert decrypt(test_passphrase, encrypted_string) == test_string
 
-    with pytest.raises(SystemExit) as exc_info:
+    with pytest.raises(UsageError) as exc_info:
         decrypt('wrong_passphrase', encrypted_string)
 
-    assert isinstance(exc_info.value, SystemExit)
+    assert isinstance(exc_info.value, UsageError)
     assert exc_info.value.args[0] == 'Password incorrect'

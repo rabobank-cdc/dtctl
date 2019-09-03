@@ -31,7 +31,7 @@ def select_model(program_state, selectors, outfile):
     key_values = {}
     for arg in selectors:
         if '=' not in arg:
-            raise SystemExit('Invalid format for "{0}"\nSELECTORS must be in format "key=value"'.format(arg))
+            raise click.UsageError('Invalid format for "{0}"\nSELECTORS must be in format "key=value"'.format(arg))
         key, value = arg.split('=')
         key_values[key] = value
 

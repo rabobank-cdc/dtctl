@@ -4,6 +4,7 @@
 import os
 import datetime as dt
 import pandas as pd
+import click
 from pandas.io.json import json_normalize
 from dtctl.utils.timeutils import fmttime
 
@@ -116,7 +117,7 @@ def get_models_from_infile(infile):
     :rtype: Dict
     """
     if not os.path.exists(infile):
-        raise SystemExit('File "{0}" does not exist'.format(infile))
+        raise click.UsageError('File "{0}" does not exist'.format(infile))
 
     input_models = []
     with open(infile) as infile_fd:
