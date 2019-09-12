@@ -59,41 +59,43 @@ def get_usage(api, **kwargs):
 
     for _instance_key, instance_values in status_dict['instances'].items():
         info = {
-            'system': instance_values['hostname'],
+            'system': instance_values['hostname'] if 'hostname' in instance_values else 'Missing',
             # 'ip': instance_key,  # instance_key is not an IP for masters. Replace when 'ip' key is made available
             'type': 'master',
             'timestamp': utc_now_timestamp(),
-            'cpu': instance_values['cpu'],
-            'dtqueue': instance_values['darkflowQueue'],
-            'memused': instance_values['memoryUsed'],
-            'bandwidth': instance_values['bandwidthCurrent'],
-            'connectionsPerMinuteCurrent': instance_values['connectionsPerMinuteCurrent'],
-            'label': instance_values['label']
+            'cpu': instance_values['cpu'] if 'cpu' in instance_values else 'Unknown',
+            'dtqueue': instance_values['darkflowQueue'] if 'darkflowQueue' in instance_values else 'Unknown',
+            'memused': instance_values['memoryUsed'] if 'memoryUsed' in instance_values else 'Unknown',
+            'bandwidth': instance_values['bandwidthCurrent'] if 'bandwidthCurrent' in instance_values else 'Unknown',
+            'connectionsPerMinuteCurrent': instance_values['connectionsPerMinuteCurrent']
+                                           if 'connectionsPerMinuteCurrent' in instance_values else 'Unknown',
+            'label': instance_values['label'] if 'label' in instance_values else ''
         }
 
         usage_list.append(info)
 
-        for probe_key, probe_values in instance_values['probes'].items():
-            # In case a probe has errors, we skip from calculating usage
-            try:
-                if probe_values['error']:
-                    continue
-            except KeyError:
-                pass
+        if 'probes' in instance_values:
+            for probe_key, probe_values in instance_values['probes'].items():
+                # In case a probe has errors, we skip from calculating usage
+                try:
+                    if probe_values['error']:
+                        continue
+                except KeyError:
+                    pass
 
-            info = {
-                'system': probe_values['hostname'],
-                'ip': probe_key,
-                'type': 'probe',
-                'timestamp': utc_now_timestamp(),
-                'label': probe_values['label'],
-                'bandwidth': probe_values['bandwidthCurrent'],
-                'memused': probe_values['memoryUsed'],
-                'connectionsPerMinuteCurrent': probe_values['connectionsPerMinuteCurrent'],
-                'cpu': probe_values['cpu']
-            }
+                info = {
+                    'system': probe_values['hostname'],
+                    'ip': probe_key,
+                    'type': 'probe',
+                    'timestamp': utc_now_timestamp(),
+                    'label': probe_values['label'] if 'label' in probe_values else '',
+                    'bandwidth': probe_values['bandwidthCurrent'],
+                    'memused': probe_values['memoryUsed'],
+                    'connectionsPerMinuteCurrent': probe_values['connectionsPerMinuteCurrent'],
+                    'cpu': probe_values['cpu']
+                }
 
-            usage_list.append(info)
+                usage_list.append(info)
 
     return usage_list
 
@@ -140,12 +142,13 @@ def get_instances(api, show_probes, **kwargs):
     instances = {}
 
     for instance_name, values in status['instances'].items():
-        instances[instance_name] = {'id': values['id'], 'label': values['label'], 'version': values['version']}
+        instances[instance_name] = {'id': values['id'], 'label': values['label'],
+                                    'version': values['version'], 'probes': None}
 
         if '-' in values['label']:
             instances[instance_name]['location'] = values['label'].split('-')[0].strip()
 
-        if show_probes:
+        if show_probes and 'probes' in values:
             for probe, probe_values in values['probes'].items():
                 # In case a probe has errors, we skip further processing
                 try:
@@ -155,17 +158,21 @@ def get_instances(api, show_probes, **kwargs):
                     pass
 
                 probe_info = {
-                    'id': probe_values['id'], 'ip': probe, 'label': probe_values['label'],
+                    'id': probe_values['id'], 'ip': probe,
+                    'label': probe_values['label'] if 'label' in probe_values else '',
                     'version': probe_values['version']
                 }
 
-                if '-' in probe_values['label']:
-                    probe_info['location'] = probe_values['label'].split('-')[0].strip()
+                try:
+                    if '-' in probe_values['label']:
+                        probe_info['location'] = probe_values['label'].split('-')[0].strip()
+                except KeyError:
+                    probe_info['location'] = 'Not Available'
 
-                if 'probes' not in instances[instance_name]:
-                    instances[instance_name]['probes'] = [probe_info]
-                else:
+                if instances[instance_name]['probes']:
                     instances[instance_name]['probes'].append(probe_info)
+                else:
+                    instances[instance_name]['probes'] = [probe_info]
 
     return instances
 
