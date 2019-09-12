@@ -1,8 +1,8 @@
 # pylint: disable=W0212
 """Common functions for reporting requirements"""
+import click
 import openpyxl
 import openpyxl.utils
-import click
 from openpyxl import styles
 from openpyxl import load_workbook
 from openpyxl.worksheet import table
@@ -50,7 +50,7 @@ def format_report(breaches_df, output_file, template, output_format):
         # appending creates weird results.
         if not set(column_names) == set(df_columns):
             raise click.UsageError('Template file has different columns than requested report\n'
-                             'Expected columns: {0}'.format(', '.join(df_columns)))
+                                   'Expected columns: {0}'.format(', '.join(df_columns)))
 
         table_ref = get_table_ref(work_sheet)  # Returns None if no table is found
 

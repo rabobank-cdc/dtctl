@@ -1,6 +1,6 @@
 """Common functions for cryptography"""
-import click
 from base64 import b64encode, b64decode
+import click
 from Cryptodome.Cipher import AES
 from Cryptodome.Util import Padding
 from Cryptodome.Protocol.KDF import PBKDF2

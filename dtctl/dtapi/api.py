@@ -179,6 +179,14 @@ def make_curl_command(prepared_request):
 
 
 def print_debug_message(prepared_request):
+    """
+    Function for printing a uniform debug message
+
+    :param prepared_request: The prepared HTTP request used in debug output
+    :type prepared_request: Request
+    :return: None
+    :rtype: None
+    """
     print('Request URL:\n[-] {0}'.format(prepared_request.url))
     print('Test command:\n[-] {0}'.format(make_curl_command(prepared_request)))
     print()

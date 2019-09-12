@@ -3,8 +3,8 @@ import os
 import sys
 import json
 import getpass
-import click
 from pathlib import Path
+import click
 from dtctl.utils.crypto import decrypt
 
 

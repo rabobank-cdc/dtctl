@@ -1,6 +1,5 @@
 """Common functions for output related requirements"""
 import json
-import click
 
 
 def process_output(output, outfile, append=False, to_json=True):
@@ -46,4 +45,3 @@ def process_output(output, outfile, append=False, to_json=True):
             print(str(item).strip())
     else:
         print(output)
-

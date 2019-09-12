@@ -4,8 +4,8 @@
 import os
 import datetime as dt
 import pandas as pd
-import click
 from pandas.io.json import json_normalize
+import click
 from dtctl.utils.timeutils import fmttime
 
 
