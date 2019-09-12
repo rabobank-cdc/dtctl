@@ -8,6 +8,45 @@ from dtctl.utils.parsing import convert_series
 from dtctl.utils.reporting import format_report, device_info
 
 
+def get_breaches(api, acknowledged, tags, minimal, minscore, start_date, end_date):
+    """
+    Function to get breaches based on filters and flags
+
+    :param api: Darktrace API object with initialized config values
+    :type api: Api
+    :param acknowledged: Value of acknowledged flag
+    :type acknowledged: Boolean
+    :param tags: Tags to filter on
+    :type tags: List
+    :param minimal: Value of minimal flag
+    :type minimal: Boolean
+    :param minscore: Minimum score of breaches to filter on
+    :type minscore: Float
+    :param start_date:
+    :type start_date: DateTime
+    :param end_date:
+    :type end_date: DateTime
+    :return: Filtered breaches
+    :rtype: List
+    """
+    start_date = fmttime(start_date) if start_date else None
+    end_date = fmttime(end_date) if end_date else None
+
+    str_acknowledged = str(acknowledged).lower() if acknowledged else 'false'
+    str_minimal = str(minimal).lower() if minimal else 'false'
+
+    breaches = api.get('/modelbreaches', starttime=start_date, endtime=end_date, includeacknowledged=str_acknowledged,
+                       minimal=str_minimal, historicmodelonly='true', includebreachurl='true', minscore=minscore)
+
+    if acknowledged:
+        breaches = filter_acknowledged_breaches(breaches)
+
+    if tags:
+        breaches = filter_breaches_by_tag(breaches, tags)
+
+    return breaches
+
+
 def all_breaches(api, start_date, end_date):
     """
     Get all model breaches
@@ -20,8 +59,8 @@ def all_breaches(api, start_date, end_date):
     start_date = fmttime(start_date) if start_date else None
     end_date = fmttime(end_date) if end_date else None
 
-    breaches = api.get('/modelbreaches', starttime=start_date,
-                       endtime=end_date, includeacknowledged='true', historicmodelonly='true', minimal='false')
+    breaches = api.get('/modelbreaches', starttime=start_date, endtime=end_date, includeacknowledged='true',
+                       historicmodelonly='true', minimal='false', includebreachurl='true')
     return breaches
 
 
@@ -35,11 +74,7 @@ def acknowledged_breaches(api, start_date, end_date):
     :return: List with acknowledged breaches
     """
     breaches = all_breaches(api, start_date, end_date)
-    acknowledged_breaches_list = []
-    for breach in breaches:
-        if breach['acknowledged']:
-            acknowledged_breaches_list.append(breach)
-    return acknowledged_breaches_list
+    return filter_acknowledged_breaches(breaches)
 
 
 def report_breaches(program_state, arg, start_date, end_date, output_file, template, output_format):
@@ -293,3 +328,39 @@ def get_comments(api, pbid):
     for comment in comments:
         message += '{0}:{1}\n'.format(comment['username'], comment['message'])
     return message
+
+
+def filter_acknowledged_breaches(breaches):
+    """
+    Function to filter out acknowledged breaches
+
+    :param breaches: Breaches to filter
+    :type breaches: List
+    :return: Acknowledged breaches
+    :rtype: List
+    """
+    acknowledged_breaches_list = []
+    for breach in breaches:
+        if breach['acknowledged']:
+            acknowledged_breaches_list.append(breach)
+    return acknowledged_breaches_list
+
+
+def filter_breaches_by_tag(breaches, tags_to_filter):
+    """
+    Function to filter breaches based on tags
+
+    :param breaches: Breaches to filter
+    :type breaches: List
+    :param tags_to_filter: Tags to filter on
+    :type tags_to_filter: List
+    :return: Filtered breaches
+    :rtype: List
+    """
+    filtered_breaches = []
+
+    for breach in breaches:
+        for tag in breach['model']['tags']:
+            if tag in tags_to_filter:
+                filtered_breaches.append(breach)
+    return filtered_breaches

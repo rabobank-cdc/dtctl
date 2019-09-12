@@ -2,13 +2,21 @@
 # pylint: disable=R0801
 import datetime as dt
 import click
-from dtctl.breaches.functions import report_breaches, all_breaches, acknowledged_breaches
+from dtctl.breaches.functions import report_breaches, get_breaches
 from dtctl.utils.timeutils import determine_date_range
 from dtctl.utils.output import process_output
+from dtctl.utils.clickutils import OptionMutex
 
 
 @click.command('list', short_help='List Darktrace model breaches')
-@click.argument('arg', type=click.Choice(['all', 'acknowledged']))
+@click.option('--acknowledged', '-a', is_flag=True, default=False, show_default=True,
+              help='Show only acknowledged breaches')
+@click.option('--tag', '-t', 'tags', type=click.STRING, multiple=True, cls=OptionMutex, not_required_if=['minimal'],
+              help='Filter model breaches based on tag (option reusable)')
+@click.option('--minimal', '-m', type=click.STRING, is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['tag'], help='Only show minimal breach details')
+@click.option('--minscore', '-s', type=click.FLOAT, default=0.0, show_default=True,
+              help='Filter model breaches based on score (1.0 = 100%)')
 @click.option('--days', '-d', default=7, type=click.INT,
               help='Number of days in the past for the start date of the report.')
 @click.option('--start-date', type=click.DateTime(formats=('%d-%m-%Y',)),
@@ -17,23 +25,17 @@ from dtctl.utils.output import process_output
               help='End date of the report.')
 @click.option('--outfile', '-o', help='Full path to the output file.', type=click.Path())
 @click.pass_obj
-def list_breaches(program_state, arg, days, start_date, end_date, outfile):
-    """
-    List Darktrace model breaches
-
-    \b
-    Arguments:
-        all                 List all breaches
-        acknowledged        Only list acknowledged breaches
-    """
+def list_breaches(program_state, acknowledged, tags, minimal, minscore, days, start_date, end_date, outfile):
+    """List Darktrace model breaches"""
     end_date, start_date = determine_date_range(days, end_date, start_date)
 
-    get_breaches = {
-        'all': all_breaches,
-        'acknowledged': acknowledged_breaches
-    }
+    if minscore > 1.0:
+        minscore = 1.0
+    if minscore < 0.0:
+        minscore = 0.0
+    minscore = round(minscore, 1)
 
-    output = get_breaches[arg](program_state.api, start_date, end_date)
+    output = get_breaches(program_state.api, acknowledged, tags, minimal, minscore, start_date, end_date)
     process_output(output, outfile)
 
 

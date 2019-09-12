@@ -27,26 +27,12 @@ def test_breaches_list_command(get_private_key):
 
     assert result.exit_code == 0
     assert 'List Darktrace model breaches' in result.output
-    assert 'Arguments:' in result.output
-    assert re.search(r'all\s+List', result.output)
-    assert re.search(r'acknowledged\s+Only', result.output)
-
-
-@patch('dtctl.cli.get_private_key')
-def test_breaches_list_command(get_private_key):
-    get_private_key.return_value = ''
-    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'breaches', 'list', '--help'])
-
-    assert result.exit_code == 0
-
-    # Ensures that arguments additions fail the test
-    assert '[all|acknowledged]' in result.output
-    assert 'List Darktrace model breaches' in result.output
-    assert 'Arguments:' in result.output
-    assert re.search(r'all\s+List', result.output)
-    assert re.search(r'acknowledged\s+Only', result.output)
 
     # Options
+    assert '-a, --acknowledged' in result.output
+    assert '-t, --tag' in result.output
+    assert '-m, --minimal' in result.output
+    assert '-s, --minscore' in result.output
     assert '-d, --days INTEGER' in result.output
     assert '--start-date [%d-%m-%Y]' in result.output
     assert '--end-date [%d-%m-%Y]' in result.output
@@ -54,7 +40,7 @@ def test_breaches_list_command(get_private_key):
 
 
 @patch('dtctl.cli.get_private_key')
-def test_breaches_list_command(get_private_key):
+def test_breaches_report_command(get_private_key):
     get_private_key.return_value = ''
     result = runner.invoke(cli, ['-h', '_', '-p', '_', 'breaches', 'report', '--help'])
 
