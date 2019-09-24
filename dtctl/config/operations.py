@@ -34,7 +34,7 @@ def get_private_key(priv_dtkey, config_dict):
 
     if 'dtkey' in config_dict:
         print('WARNING: Using plaintext dtkey from config file.', file=sys.stderr)
-        print('# Please use "dtctl config set --secure-dtkey"', file=sys.stderr)
+        print('# Please use "dtctl config set secure-dtkey"', file=sys.stderr)
         privkey = config_dict['dtkey']
 
     if not privkey:
@@ -43,7 +43,7 @@ def get_private_key(priv_dtkey, config_dict):
     if not privkey:
         error_msg = 'Unable to determine private key\n' \
                     '# Please configure a private key before using dtctl\n' \
-                    '# - e.g.: dtctl config set --secure-dtkey'
+                    '# - e.g.: dtctl config set secure-dtkey'
         raise click.UsageError(error_msg)
 
     return privkey

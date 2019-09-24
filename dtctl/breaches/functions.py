@@ -235,7 +235,7 @@ def report_breaches_brief(program_state, start_date, end_date, output_file, temp
 def has_enhanced_tag(tags):
     """
     Simple function to check if 'Enhanced' tag is in a list of tags
-    returns integer instead of boolean for Excel count and sum funtionality
+    returns integer instead of boolean for Excel count and sum functionality
 
     :return: int: 1 if contains Enhanced, 0 if not
     """
@@ -286,7 +286,7 @@ def get_instances_region(api):
     status = api.get('/status')
     instances = {}
     for _, values in status['instances'].items():
-        instances[values['id']] = {'label': values['label']}
+        instances[values['id']] = {'label': values['label'] if 'label' in values else ''}
         if '-' in values['label']:
             instances[values['id']]['region'] = values['label'].split('-')[0].strip()
     return instances
