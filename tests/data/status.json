@@ -374,7 +374,8 @@
                     "time": "2019-01-01 00:00",
                     "type": "probe",
                     "version": "1.0.0 (a342de)"
-                }
+                },
+                "192.168.1.4": {"id": 8, "error": true}
             },
             "processedBandwidth2WeekPeak": 1000000000,
             "processedBandwidth2WeekPeakString": "1.00 Gbps",
@@ -415,7 +416,8 @@
             "time": "2019-01-01 00:00",
             "type": "master",
             "version": "1.0.0 (a342de)"
-        }		
+        },
+        "darktrace-instance-3": {"id": 3, "error": true}
     },
     "load": 0,
     "memoryUsed": 1,

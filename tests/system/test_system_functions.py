@@ -49,6 +49,8 @@ def test_get_instances(status_info):
     assert instances['darktrace-instance-2']['id'] == 2
     assert instances['darktrace-instance-2']['label'] == 'Location2 - Name2'
     assert instances['darktrace-instance-2']['location'] == 'Location2'
+    assert instances['darktrace-instance-2']['probes'][2]['error']
+    assert instances['darktrace-instance-3']['error']
 
 
 def test_get_usage(status_info):
@@ -57,7 +59,7 @@ def test_get_usage(status_info):
 
     result = get_usage(api)
 
-    assert len(result) == 5
+    assert len(result) == 6
 
     assert result[0]['system'] == 'darktrace-hostname-1'
     assert result[0]['type'] == 'master'

@@ -24,6 +24,5 @@ class OptionMutex(click.Option):
                 if current_opt:
                     raise click.UsageError('"' + str(self.name) + '" is mutually exclusive with "'
                                            + str(mutex_opt) + '".')
-                else:
-                    self.prompt = None
+                self.prompt = None
         return super(OptionMutex, self).handle_parse_result(ctx, opts, args)
