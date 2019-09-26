@@ -18,6 +18,12 @@ def list_devices(api):
     status_dict = api.get('/status')
     result = {'clients': 0, 'servers': 0, 'total': 0}
     for _, instance_values in status_dict['instances'].items():
+        try:
+            if instance_values['error'] is True:
+                continue
+        except KeyError:
+            pass
+
         for subnet in instance_values['subnetData']:
             if 'devices' in subnet:
                 result['total'] += subnet['devices']
@@ -122,6 +128,12 @@ def get_unidirectional_traffic(api):
     unidirectional_traffic = {}
 
     for instance_key, instance_values in status_dict['instances'].items():
+        try:
+            if instance_values['error'] is True:
+                continue
+        except KeyError:
+            pass
+
         unidirectional_traffic[instance_key] = {}
         unidirectional_traffic[instance_key]['master_recorded'] = instance_values['recentUnidirectionalConnections']
         unidirectional_traffic[instance_key]['total_seen_subnets'] = len(instance_values['subnetData'])
@@ -166,6 +178,12 @@ def get_dhcp_stats(api):
     dhcp_statistics = []
 
     for _instance_key, instance_values in status_dict['instances'].items():
+        try:
+            if instance_values['error'] is True:
+                continue
+        except KeyError:
+            pass
+
         dhcp_information = {
             'system': instance_values['hostname'],
             # 'ip': instance_key,  # Replace with 'ip' key once made available in status output

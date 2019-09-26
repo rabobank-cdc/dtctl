@@ -286,6 +286,12 @@ def get_instances_region(api):
     status = api.get('/status')
     instances = {}
     for _, values in status['instances'].items():
+        try:
+            if values['error'] is True:
+                continue
+        except KeyError:
+            pass
+
         instances[values['id']] = {'label': values['label'] if 'label' in values else ''}
         if '-' in values['label']:
             instances[values['id']]['region'] = values['label'].split('-')[0].strip()

@@ -142,17 +142,27 @@ def get_instances(api, show_probes, **kwargs):
     instances = {}
 
     for instance_name, values in status['instances'].items():
+        try:
+            if values['error'] is True:
+                instances[instance_name] = {'error': True}
+                continue
+        except KeyError:
+            pass
+
         instances[instance_name] = {'id': values['id'], 'label': values['label'],
-                                    'version': values['version'], 'probes': None}
+                                    'version': values['version']}
 
         if '-' in values['label']:
             instances[instance_name]['location'] = values['label'].split('-')[0].strip()
 
         if show_probes and 'probes' in values:
+            instances[instance_name]['probes'] = []
+
             for probe, probe_values in values['probes'].items():
                 # In case a probe has errors, we skip further processing
                 try:
                     if probe_values['error']:
+                        instances[instance_name]['probes'].append({probe: 'error'})
                         continue
                 except KeyError:
                     pass
@@ -169,10 +179,7 @@ def get_instances(api, show_probes, **kwargs):
                 except KeyError:
                     probe_info['location'] = 'Not Available'
 
-                if instances[instance_name]['probes']:
-                    instances[instance_name]['probes'].append(probe_info)
-                else:
-                    instances[instance_name]['probes'] = [probe_info]
+                instances[instance_name]['probes'].append(probe_info)
 
     return instances
 
