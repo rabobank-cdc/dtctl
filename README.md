@@ -4,7 +4,8 @@ A Darktrace CLI written in Python for interacting with the Darktrace API.
 
 ## Getting Started
 
-```python >= 3.7``` is required to run dtctl.
+```python >= 3.7``` is required to run dtctl. Although ```python 3.6``` has not been tested, it is reported
+ to be working.
 
 To get started quickly with the Darktrace cli, do the following:
 
