@@ -145,11 +145,12 @@ config.add_command(config_commands.get_config)
 config.add_command(config_commands.set_config)
 
 # sub-commands for "details" command
-details.add_command(details_commands.device_details)
-details.add_command(details_commands.host_details)
-details.add_command(details_commands.message_details)
 details.add_command(details_commands.breach_details)
 details.add_command(details_commands.connection_details)
+details.add_command(details_commands.device_details)
+details.add_command(details_commands.endpoint_details)
+details.add_command(details_commands.host_details)
+details.add_command(details_commands.message_details)
 
 # sub-commands for "devices" command
 devices.add_command(devices_commands.list_devices)

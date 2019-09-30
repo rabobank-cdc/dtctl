@@ -2,10 +2,43 @@
 # pylint: disable=R0801
 import click
 from dtctl.details.functions import get_device_details, get_host_details, get_message_details, \
-                                    get_breach_details, get_connection_details
+                                    get_breach_details, get_connection_details, get_endpoint_details
 from dtctl.utils.timeutils import determine_date_range
 from dtctl.utils.output import process_output
-from dtctl.utils.subnetting import is_valid_domain, is_valid_hostname
+from dtctl.utils.subnetting import is_valid_domain, is_valid_hostname, is_valid_ipv4_address, is_valid_ipv6_address
+from dtctl.utils.clickutils import OptionMutex
+
+
+@click.command('breach', short_help='Time sorted list of connections and events for a breach')
+@click.argument('pbid', type=click.INT, required=True)
+@click.option('--outfile', '-o', help='Full path to the output file.', type=click.Path())
+@click.pass_obj
+def breach_details(program_state, pbid, outfile):
+    """Time sorted list of connections and events for a breach"""
+    output = get_breach_details(program_state.api, pbid)
+    process_output(output, outfile)
+
+
+@click.command('connection', short_help='Time sorted list of events for a connection')
+@click.argument('uid', type=click.STRING, required=True)
+@click.option('--days', '-d', default=2, type=click.INT,
+              help='Number of days in the past for filter.', show_default=True)
+@click.option('--start-date', type=click.DateTime(formats=('%d-%m-%Y',)),
+              help='Start date for date range filtering. (overwrites the "--days" flag)')
+@click.option('--end-date', type=click.DateTime(formats=('%d-%m-%Y',)),
+              help='End date for date range filtering.')
+@click.option('--outfile', '-o', help='Full path to the output file.', type=click.Path())
+@click.pass_obj
+def connection_details(program_state, uid, days, start_date, end_date, outfile):
+    """
+    Time sorted list of events for a connection
+
+    \b
+        Example: CcdXo43n8B75cdYyI5
+    """
+    end_date, start_date = determine_date_range(days, end_date, start_date)
+    output = get_connection_details(program_state.api, uid, start_date, end_date)
+    process_output(output, outfile)
 
 
 @click.command('device', short_help='Time sorted list of connections and events for a device')
@@ -22,6 +55,25 @@ def device_details(program_state, did, days, start_date, end_date, outfile):
     """Time sorted list of connections and events for a device"""
     end_date, start_date = determine_date_range(days, end_date, start_date)
     output = get_device_details(program_state.api, did, start_date, end_date)
+    process_output(output, outfile)
+
+
+@click.command('endpoint', short_help='Returns details for external host')
+@click.option('--host', '-h', help='Host to check endpoint details for',
+              cls=OptionMutex, not_required_if=['infile'])
+@click.option('--infile', '-i', help='Full path to file with host on each line',
+              type=click.Path(exists=True), cls=OptionMutex, not_required_if=['host'])
+@click.option('--outfile', '-o', help='Full path to the output file.', type=click.Path())
+@click.pass_obj
+def endpoint_details(program_state, host, infile, outfile):
+    """Returns details for external IP addresses and hostnames."""
+    if not host and not infile:
+        raise click.UsageError('Missing option "--host" / "-h" or "--infile" / "-i".')
+
+    if host and not (is_valid_hostname(host) or is_valid_ipv4_address(host)):
+        raise click.UsageError('Invalid hostname or IP address')
+
+    output = get_endpoint_details(program_state.api, host, infile)
     process_output(output, outfile)
 
 
@@ -66,33 +118,3 @@ def message_details(program_state, text, days, start_date, end_date, outfile):
     process_output(output, outfile)
 
 
-@click.command('breach', short_help='Time sorted list of connections and events for a breach')
-@click.argument('pbid', type=click.INT, required=True)
-@click.option('--outfile', '-o', help='Full path to the output file.', type=click.Path())
-@click.pass_obj
-def breach_details(program_state, pbid, outfile):
-    """Time sorted list of connections and events for a breach"""
-    output = get_breach_details(program_state.api, pbid)
-    process_output(output, outfile)
-
-
-@click.command('connection', short_help='Time sorted list of events for a connection')
-@click.argument('uid', type=click.STRING, required=True)
-@click.option('--days', '-d', default=2, type=click.INT,
-              help='Number of days in the past for filter.', show_default=True)
-@click.option('--start-date', type=click.DateTime(formats=('%d-%m-%Y',)),
-              help='Start date for date range filtering. (overwrites the "--days" flag)')
-@click.option('--end-date', type=click.DateTime(formats=('%d-%m-%Y',)),
-              help='End date for date range filtering.')
-@click.option('--outfile', '-o', help='Full path to the output file.', type=click.Path())
-@click.pass_obj
-def connection_details(program_state, uid, days, start_date, end_date, outfile):
-    """
-    Time sorted list of events for a connection
-
-    \b
-        Example: CcdXo43n8B75cdYyI5
-    """
-    end_date, start_date = determine_date_range(days, end_date, start_date)
-    output = get_connection_details(program_state.api, uid, start_date, end_date)
-    process_output(output, outfile)

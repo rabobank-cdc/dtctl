@@ -1,7 +1,10 @@
 # pylint: disable=C0325
 """Functions used by the Click details subcommand"""
 
+import os.path
+import click
 from dtctl.utils.timeutils import fmttime
+from dtctl.utils.subnetting import is_valid_ipv4_address
 
 
 def get_device_details(api, did, start_date, end_date):
@@ -23,6 +26,37 @@ def get_device_details(api, did, start_date, end_date):
     end_time = fmttime(end_date) if end_date else None
 
     details = api.get('/details', did=did, starttime=start_time, endtime=end_time)
+    return details
+
+
+def get_endpoint_details(api, host, infile):
+    """
+    Retrieve details for external IP addresses and hostnames.
+
+    :param api: Darktrace API object with initialized config values
+    :type api: Api
+    :param host: External hostname to receive details for
+    :type host: String
+    :param infile: Input file with an endpoint on each line
+    :type infile: String
+    :return: Details for external host
+    :rtype: Dict or List
+    """
+    if infile:
+        if not os.path.isfile(infile):
+            raise click.UsageError('Input file does not exist')
+
+        details = []
+        with open(infile) as input_list:
+            for line in input_list.readlines():
+                details.append(api.get('/endpointdetails', additionalinfo='true', devices='true', ip=line.strip()))
+        return details
+
+    if is_valid_ipv4_address(host):
+        details = api.get('/endpointdetails', additionalinfo='true', devices='true', ip=host)
+    else:
+        details = api.get('/endpointdetails', additionalinfo='true', devices='true', hostname=host)
+
     return details
 
 
