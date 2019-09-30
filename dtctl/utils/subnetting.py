@@ -91,8 +91,8 @@ def is_valid_hostname(entry):
     :return: True for a match, False if no match
     :rtype: Boolean
     """
-    domain_regex = re.compile('^([a-z0-9](?:[a-z0-9-]*[a-z0-9]))$')
+    hostname_regex = re.compile('^([a-z0-9](?:[a-z0-9-]*[a-z0-9]))$')
 
-    if domain_regex.match(entry):
+    if hostname_regex.match(entry):
         return True
     return False
