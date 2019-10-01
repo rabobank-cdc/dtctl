@@ -45,7 +45,7 @@ def get_device_info_by_ip(api, ip, days):
     """
     Retrieve device information by querying Darktrace for an internal IP address
 
-    :param api: Darktrace API oject with initialized config values
+    :param api: Darktrace API object with initialized config values
     :type api: Api
     :param ip: IP address to retrieve device information for
     :type ip: String
