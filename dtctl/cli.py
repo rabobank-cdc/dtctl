@@ -17,6 +17,7 @@ from dtctl.models import commands as models_commands
 from dtctl.query import commands as query_commands
 from dtctl.subnets import commands as subnets_commands
 from dtctl.system import commands as system_commands
+from dtctl.tags import commands as tags_commands
 from dtctl.utils.state import ProgramState
 
 
@@ -129,6 +130,11 @@ def system():
 
 
 @cli.group()
+def tags():
+    """Manage Darktrace tags"""
+
+
+@cli.group()
 def query():
     """Send direct HTTP requests to Darktrace API"""
 
@@ -155,6 +161,7 @@ details.add_command(details_commands.message_details)
 # sub-commands for "devices" command
 devices.add_command(devices_commands.list_devices)
 devices.add_command(devices_commands.device_info)
+devices.add_command(devices_commands.ip_info)
 
 # sub-commands for "filters" command
 filters.add_command(filters_commands.list_filters)
@@ -195,6 +202,11 @@ system.add_command(system_commands.instances)
 system.add_command(system_commands.moo)
 system.add_command(system_commands.packet_loss)
 system.add_command(system_commands.issues)
+
+# sub-commands for "tags" command
+tags.add_command(tags_commands.list_tags)
+tags.add_command(tags_commands.device)
+tags.add_command(tags_commands.search)
 
 # sub-commands for "query" command
 query.add_command(query_commands.get)
