@@ -158,6 +158,57 @@ class Api:
                 raise SystemExit('API endpoint not supported')
             return body
 
+    def delete(self, call, **kwargs):
+        """
+        Perform a DELETE request to Darktrace API
+
+        :param call: The API endpoint call. E.g. /status
+        :type call: String
+        :param kwargs: Arguments for the final HTTP request
+        :type kwargs: Dict
+        :return: Result of API call
+        :rtype: Dict
+        """
+        req = requests.Request('DELETE', self.address + call, params=kwargs)
+        prepped = req.prepare()
+        headers = self.get_headers(prepped.path_url)
+        prepped.headers = headers
+        session = requests.Session()
+
+        if self.debug:
+            print_debug_message(prepped)
+
+        if self.ca_cert and os.path.exists(self.ca_cert):
+            verify = self.ca_cert
+        else:
+            verify = not self.insecure
+
+        try:
+            resp = session.send(prepped, verify=verify)
+        except requests.exceptions.SSLError as err:
+            raise SystemExit(err)
+        except requests.exceptions.ConnectionError as err:
+            raise SystemExit('Error: Failed connecting to {0}'.format(self.address))
+
+        return_info = {
+            'status_code': resp.status_code,
+            'status': 'unknown'
+        }
+
+        # Quick way of assigning simple messages to status codes
+        if resp.status_code in [200, 201, 202, 204]:
+            return_info['status'] = 'success'
+
+        if resp.status_code in [400]:
+            return_info['status'] = 'bad request'
+
+        if resp.status_code in [401, 403, 405, 409]:
+            return_info['status'] = 'unauthorized'
+
+        if resp.status_code in [501, 502]:
+            return_info['status'] = 'error'
+
+        return return_info
 
 def make_curl_command(prepared_request):
     """
