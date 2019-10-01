@@ -5,7 +5,7 @@ from dtctl.details.functions import get_device_details, get_host_details, get_me
                                     get_breach_details, get_connection_details, get_endpoint_details
 from dtctl.utils.timeutils import determine_date_range
 from dtctl.utils.output import process_output
-from dtctl.utils.subnetting import is_valid_domain, is_valid_hostname, is_valid_ipv4_address, is_valid_ipv6_address
+from dtctl.utils.subnetting import is_valid_domain, is_valid_hostname, is_valid_ipv4_address
 from dtctl.utils.clickutils import OptionMutex
 
 
@@ -116,5 +116,3 @@ def message_details(program_state, text, days, start_date, end_date, outfile):
     end_date, start_date = determine_date_range(days, end_date, start_date)
     output = get_message_details(program_state.api, text, start_date, end_date)
     process_output(output, outfile)
-
-
