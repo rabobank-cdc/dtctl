@@ -23,12 +23,3 @@ def test_system_wrong_subcommand(get_private_key):
 
     assert result.exit_code is not 0
     assert 'Error: No such command "wrong".' in result.output
-
-
-@patch('dtctl.cli.get_private_key')
-def test_system_wrong_subcommand(get_private_key):
-    get_private_key.return_value = ''
-    result = runner.invoke(cli, ['-h', 'http://localhost', '-p', 'pubkey', '-s', 'privkey', 'system', 'wrong'])
-
-    assert result.exit_code is not 0
-    assert 'Error: No such command "wrong".' in result.output

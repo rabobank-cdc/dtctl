@@ -1,0 +1,84 @@
+[
+    {
+        "data": {
+            "auto": false,
+            "color": 100,
+            "description": ""
+        },
+        "expiry": 0,
+        "isReferenced": true,
+        "name": "Active Threat",
+        "restricted": false,
+        "thid": 5,
+        "tid": 1
+    },
+    {
+        "data": {
+            "auto": false,
+            "color": 100,
+            "description": "",
+            "visibility": ""
+        },
+        "expiry": 0,
+        "isReferenced": true,
+        "name": "Admin",
+        "restricted": false,
+        "thid": 6,
+        "tid": 2
+    },
+    {
+        "data": {
+            "auto": false,
+            "color": 100,
+            "description": ""
+        },
+        "expiry": 0,
+        "isReferenced": true,
+        "name": "Android Device",
+        "restricted": false,
+        "thid": 7,
+        "tid": 3
+    },
+    {
+        "data": {
+            "auto": false,
+            "color": 100,
+            "description": "",
+            "visibility": "Public"
+        },
+        "expiry": 0,
+        "isReferenced": true,
+        "name": "Antigena",
+        "restricted": false,
+        "thid": 8,
+        "tid": 4
+    },
+    {
+        "data": {
+            "auto": false,
+            "color": 100,
+            "description": "",
+            "visibility": "Public"
+        },
+        "expiry": 0,
+        "isReferenced": true,
+        "name": "Antigena All",
+        "restricted": false,
+        "thid": 9,
+        "tid": 5
+    },
+    {
+        "data": {
+            "auto": false,
+            "color": 100,
+            "description": "",
+            "visibility": "Public"
+        },
+        "expiry": 0,
+        "isReferenced": true,
+        "name": "Base",
+        "restricted": false,
+        "thid": 9,
+        "tid": 5
+    }
+]
