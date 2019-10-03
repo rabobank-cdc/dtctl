@@ -17,6 +17,7 @@ def test_devices_command(get_private_key):
     assert result.exit_code == 0
     assert 'List active devices identified by Darktrace' in result.output
     assert re.search(r'list\s+Returns', result.output)
+    assert re.search(r'ip\s+Return', result.output)
     assert re.search(r'info\s+Returns', result.output)
 
 

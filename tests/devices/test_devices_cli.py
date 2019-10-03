@@ -42,3 +42,13 @@ def test_devices_wrong_info_arguments(get_private_key):
 
     assert result.exit_code is not 0
     assert 'Error: Invalid value for "DID": wrong is not a valid integer' in result.output
+
+
+@patch('dtctl.cli.get_private_key')
+def test_devices_wrong_info_arguments(get_private_key):
+    get_private_key.return_value = ''
+    result = runner.invoke(cli, ['-h', 'http://localhost', '-p', 'pubkey', '-s', 'privkey',
+                                 'devices', 'ip', '256.100.100.100'])
+
+    assert result.exit_code is not 0
+    assert 'Error: not a valid IP address' in result.output
