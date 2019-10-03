@@ -51,7 +51,8 @@ def list_breaches(program_state, acknowledged, tags, minimal, minscore, days, st
                                       ' Defaults to: ./breaches_%Y-%m-%d_%H.%M.%S.xlsx',
               type=click.Path())
 @click.option('--template', '-t', help='Full path to the template excel file. Appends breaches to sheet "RawData". '
-                                       'Will append to a table if a table named "RawDataTable" is found.')
+                                       'Will append to a table if a table named "RawDataTable" is found.',
+              type=click.Path(exists=True))
 @click.option('--output', '-f', help='Specify output format', default='xlsx', type=click.Choice(['csv', 'xlsx']))
 @click.pass_obj
 def report(program_state, arg, days, start_date, end_date, outfile, template, output):
