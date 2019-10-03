@@ -32,8 +32,8 @@ def modify_device_tags(api, action, tag, did):
     if action == 'add':
         return api.post('/tags/entities', postdata={'did': did, 'tag': tag}, did=did, tag=tag)
 
-    elif action == 'delete':
-        return api.delete('/tags/entities', tag=tag, did=did)
+    # action == 'delete':
+    return api.delete('/tags/entities', tag=tag, did=did)
 
 
 def search_tags(api, name_query, devices_tagged_with):
@@ -55,7 +55,8 @@ def search_tags(api, name_query, devices_tagged_with):
     # it might be better to split this function into two.
     #
     if devices_tagged_with:
-        return api.get('/tags/entities', tag=devices_tagged_with)
+        tagged_devices = api.get('/tags/entities', tag=devices_tagged_with)
+        return tagged_devices
 
     if name_query:
         tags = api.get('/tags')

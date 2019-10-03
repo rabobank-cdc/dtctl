@@ -41,14 +41,14 @@ def get_device_info(api, device_id, full_device_details):
     return api.get('/deviceinfo', did=device_id, fulldevicedetails=str(full_device_details).lower())
 
 
-def get_device_info_by_ip(api, ip, days):
+def get_device_info_by_ip(api, ip_address, days):
     """
     Retrieve device information by querying Darktrace for an internal IP address
 
     :param api: Darktrace API object with initialized config values
     :type api: Api
-    :param ip: IP address to retrieve device information for
-    :type ip: String
+    :param ip_address: IP address to retrieve device information for
+    :type ip_address: String
     :param days: Search for device information since X days
     :type days: Int
     :return: Darktrace device information
@@ -57,4 +57,4 @@ def get_device_info_by_ip(api, ip, days):
     if days:
         seen_since = '{0}days'.format(days)
 
-    return api.get('/devices', ip=ip, seensince=seen_since)
+    return api.get('/devices', ip=ip_address, seensince=seen_since)

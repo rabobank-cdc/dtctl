@@ -210,6 +210,7 @@ class Api:
 
         return return_info
 
+
 def make_curl_command(prepared_request):
     """
     Turn a prepared Request into a curl command.

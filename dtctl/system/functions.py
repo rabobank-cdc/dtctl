@@ -68,7 +68,7 @@ def get_usage(api, **kwargs):
             'memused': instance_values['memoryUsed'] if 'memoryUsed' in instance_values else 'Unknown',
             'bandwidth': instance_values['bandwidthCurrent'] if 'bandwidthCurrent' in instance_values else 'Unknown',
             'connectionsPerMinuteCurrent': instance_values['connectionsPerMinuteCurrent']
-            if 'connectionsPerMinuteCurrent' in instance_values else 'Unknown',
+                                           if 'connectionsPerMinuteCurrent' in instance_values else 'Unknown',
             'label': instance_values['label'] if 'label' in instance_values else ''
         }
 

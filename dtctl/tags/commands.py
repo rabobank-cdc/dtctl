@@ -21,7 +21,8 @@ def list_tags(program_state, tag, outfile):
 @click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
 @click.pass_obj
 def device(program_state, action, tag, did, outfile):
-    """Manage tags of a device
+    """
+    Manage tags of a device
 
     \b
     Arguments:
