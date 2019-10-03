@@ -138,7 +138,7 @@ def report_commented_breaches(program_state, start_date, end_date, output_file, 
     breaches = pd.DataFrame([x for x in breaches_json if not x == []])
     breaches.index = breaches.pbid
 
-    breaches['breach_time'] = breaches['time'].map(prstime)
+    breaches['breach_time'] = pd.to_datetime(breaches['time'].map(prstime))
     del(breaches['time'])
     breaches['device_id'] = breaches.triggeredComponents.map(lambda x: device_info(x, 'did'))
     breaches['mac_address'] = breaches.triggeredComponents.map(lambda x: device_info(x, 'macaddress'))
@@ -147,7 +147,7 @@ def report_commented_breaches(program_state, start_date, end_date, output_file, 
     breaches['type'] = breaches.triggeredComponents.map(lambda x: device_info(x, 'typelabel'))
     breaches['link'] = breaches['pbid'].map(lambda x: '{0}/#modelbreach/{1}'.format(program_state.config['host'],
                                                                                     str(x)))
-
+    breaches.sort_values(by=['breach_time'], inplace=True)
     merged = unique.join(breaches)
 
     columns = ['model_name', 'breach_time', 'device_id', 'mac_address', 'ip_address',
@@ -174,7 +174,7 @@ def report_acknowledged_breaches(program_state, start_date, end_date, output_fil
     breaches = acknowledged_breaches(program_state.api, start_date, end_date)
     breaches_df = json_normalize(breaches)
     breaches_df.index = breaches_df['pbid']
-    breaches_df['breach_time'] = breaches_df['time'].map(prstime)
+    breaches_df['breach_time'] = pd.to_datetime(breaches_df['time'].map(prstime))
     breaches_df['acknowledged_time'] = breaches_df['acknowledged.time'].map(prstime)
     breaches_df['comment'] = breaches_df['pbid'].map(lambda x: get_comments(program_state.api, x))
     breaches_df['tags'] = breaches_df['model.tags'].map(convert_series)
@@ -187,6 +187,7 @@ def report_acknowledged_breaches(program_state, start_date, end_date, output_fil
     breaches_df['region'] = breaches_df['pbid'].map(lambda x: instances_by_id[int(str(x).strip('-')[0])]['region'])
     breaches_df['link'] = breaches_df['pbid'].map(lambda x: '{0}/#modelbreach/{1}'.format(program_state.config['host'],
                                                                                           str(x)))
+    breaches_df.sort_values(by=['time'], inplace=True)
 
     rename_mapping = {'model.name': 'model_name', 'commentCount': 'comments',
                       'acknowledged.username': 'acknowledged_by'}
@@ -223,9 +224,10 @@ def report_breaches_brief(program_state, start_date, end_date, output_file, temp
     breaches_df['enhanced'] = breaches_df['model.tags'].map(has_enhanced_tag)
     breaches_df['acknowledged'] = breaches_df['acknowledged'].map(lambda x: 1 if x else 0)
     breaches_df['tags'] = breaches_df['model.tags'].map(convert_series)
-    breaches_df['time'] = breaches_df['time'].map(prstime)
+    breaches_df['time'] = pd.to_datetime(breaches_df['time'].map(prstime))
     rename_mapping = {'model.name': 'model_name'}
     breaches_df.rename(columns=rename_mapping, inplace=True)
+    breaches_df.sort_values(by=['time'], inplace=True)
 
     columns = ['region', 'hostname', 'model_name', 'score', 'category', 'enhanced', 'acknowledged', 'tags', 'time']
 
@@ -237,7 +239,8 @@ def has_enhanced_tag(tags):
     Simple function to check if 'Enhanced' tag is in a list of tags
     returns integer instead of boolean for Excel count and sum functionality
 
-    :return: int: 1 if contains Enhanced, 0 if not
+    :return: 1 if contains Enhanced, 0 if not
+    :rtype: Int
     """
     if isinstance(tags, list):
         if tags:
