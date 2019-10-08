@@ -59,5 +59,5 @@ def test_breaches_report_command(get_private_key):
     assert '--start-date [%d-%m-%Y]' in result.output
     assert '--end-date [%d-%m-%Y]' in result.output
     assert '-o, --outfile PATH' in result.output
-    assert '-t, --template TEXT' in result.output
+    assert '-t, --template PATH' in result.output
     assert '-f, --output [csv|xlsx]' in result.output

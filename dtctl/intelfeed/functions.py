@@ -47,3 +47,38 @@ def add_entry_to_intelfeed(api, entry, infile):
             return api.post('/intelfeed', postdata={'addentry': entry}, addentry=entry)
 
     return 'Not a valid domain, hostname, ip address or file'
+
+
+def delete_entry_from_intelfeed(api, entry, infile):
+    """
+    Delete entry from Darktrace intelligence feed
+
+    :param api: Valid and authenticated Darktrace API object
+    :type api: Api
+    :param entry: Entry to delete from Darktrace's intelligence feed
+    :type entry: String
+    :param infile: File containing one entry per line for deletion from Darktrace's intelligence feed
+    :type infile: String
+    :return: Response message
+    :rtype: String
+    """
+    if infile:
+        results = []
+        with open(infile, 'r') as input_file:
+            for line in input_file.readlines():
+                line = line.strip()
+                if is_valid_ipv4_address(line) or is_valid_domain(line):
+                    results.append({
+                        line: api.post('/intelfeed', postdata={'removeentry': line}, removeentry=line)
+                    })
+                else:
+                    results.append({
+                        line: 'Not a valid IPv4 address or domain name'
+                    })
+        return results
+
+    if entry:
+        if is_valid_ipv4_address(entry) or is_valid_domain(entry):
+            return api.post('/intelfeed', postdata={'removeentry': entry}, removeentry=entry)
+
+    return 'Not a valid domain, hostname, ip address or file'

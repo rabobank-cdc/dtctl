@@ -2,6 +2,7 @@
 """Functions used by the Click breaches subcommand"""
 
 import pandas as pd
+import numpy as np
 from pandas.io.json import json_normalize
 from dtctl.utils.timeutils import fmttime, prstime
 from dtctl.utils.parsing import convert_series
@@ -218,18 +219,22 @@ def report_breaches_brief(program_state, start_date, end_date, output_file, temp
     breaches = all_breaches(program_state.api, start_date, end_date)
     breaches_df = json_normalize(breaches)
     breaches_df.index = breaches_df['pbid']
+    breaches_df['breach_time'] = pd.to_datetime(breaches_df['time'].map(prstime))
     breaches_df['region'] = breaches_df['pbid'].map(lambda x: instances_by_id[int(str(x).strip('-')[0])]['region'])
     breaches_df['hostname'] = breaches_df.triggeredComponents.map(get_hostname_or_ip)
     breaches_df['category'] = breaches_df['model.name'].map(lambda x: x.split('::')[0])
     breaches_df['enhanced'] = breaches_df['model.tags'].map(has_enhanced_tag)
     breaches_df['acknowledged'] = breaches_df['acknowledged'].map(lambda x: 1 if x else 0)
     breaches_df['tags'] = breaches_df['model.tags'].map(convert_series)
-    breaches_df['time'] = pd.to_datetime(breaches_df['time'].map(prstime))
+    breaches_df['acknowledged_time'] = breaches_df['acknowledged.time'].map(
+        lambda x: prstime(x) if not np.isnan(x) else ''
+    )
     rename_mapping = {'model.name': 'model_name'}
     breaches_df.rename(columns=rename_mapping, inplace=True)
-    breaches_df.sort_values(by=['time'], inplace=True)
+    breaches_df.sort_values(by=['breach_time'], inplace=True)
 
-    columns = ['region', 'hostname', 'model_name', 'score', 'category', 'enhanced', 'acknowledged', 'tags', 'time']
+    columns = ['breach_time', 'region', 'hostname', 'model_name', 'score', 'category', 'enhanced',
+               'acknowledged', 'acknowledged_time', 'tags']
 
     format_report(breaches_df[columns], output_file, template, output_format)
 

@@ -17,6 +17,7 @@ def test_intelfeed_command(get_private_key):
     assert result.exit_code == 0
     assert "Manage Darktrace's intelligence feeds" in result.output
     assert re.search(r'add\s+Add', result.output)
+    assert re.search(r'del\s+Delete', result.output)
     assert re.search(r'list\s+List', result.output)
 
 
@@ -29,6 +30,19 @@ def test_intelfeed_add_command(get_private_key):
     assert "Add entries to Darktrace's intelligence feed (Watchlist)" in result.output
     assert '-v, --value TEXT' in result.output
     assert '-i, --infile PATH' in result.output
+    assert '-o, --outfile PATH' in result.output
+
+
+@patch('dtctl.cli.get_private_key')
+def test_intelfeed_del_command(get_private_key):
+    get_private_key.return_value = ''
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'intelfeed', 'del', '--help'])
+
+    assert result.exit_code == 0
+    assert "Delete entries from Darktrace's intelligence feed (Watchlist)" in result.output
+    assert '-v, --value TEXT' in result.output
+    assert '-i, --infile PATH' in result.output
+    assert '-o, --outfile PATH' in result.output
 
 
 @patch('dtctl.cli.get_private_key')

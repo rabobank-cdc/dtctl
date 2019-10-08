@@ -169,6 +169,7 @@ filters.add_command(filters_commands.list_filters)
 # sub-commands for "intelfeed" command
 intelfeed.add_command(intelfeed_commands.list_intelfeed)
 intelfeed.add_command(intelfeed_commands.add_entry)
+intelfeed.add_command(intelfeed_commands.del_entry)
 
 # sub-commands for "metrics" command
 metrics.add_command(metrics_commands.list_metrics)

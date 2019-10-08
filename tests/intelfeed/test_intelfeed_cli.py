@@ -31,4 +31,13 @@ def test_intelfeed_missing_add_option(get_private_key):
     result = runner.invoke(cli, ['-h', 'http://localhost', '-p', 'pubkey', '-s', 'privkey', 'intelfeed', 'add'])
 
     assert result.exit_code is not 0
-    assert 'Error: Please provide an input option' in result.output
+    assert 'Missing option "--value" / "-v" or "--infile" / "-i".' in result.output
+
+
+@patch('dtctl.cli.get_private_key')
+def test_intelfeed_missing_del_option(get_private_key):
+    get_private_key.return_value = ''
+    result = runner.invoke(cli, ['-h', 'http://localhost', '-p', 'pubkey', '-s', 'privkey', 'intelfeed', 'del'])
+
+    assert result.exit_code is not 0
+    assert 'Missing option "--value" / "-v" or "--infile" / "-i".' in result.output
