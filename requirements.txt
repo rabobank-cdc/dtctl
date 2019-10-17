@@ -2,6 +2,7 @@ click
 requests
 openpyxl
 pandas
+numpy
 netaddr
 pycryptodomex
 dictdiffer

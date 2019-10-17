@@ -46,27 +46,29 @@ requests-mock
 
 ### Installing
 
-Installation is straight forward and can be done using easy-install
+Installation is straight forward and can be done using easy-install by doing:
 ```
 python setup.py install
 ```
 
-If you want to install the development environment
+If you want to install the development environment:
 
 ```
 python setup.py develop
 ```
 
-and just run
+Ensure you have the Python Scripts directory in your path if you do not use Virtual Environments.
+I.e. for windows:
+
+```
+setx PATH "%PATH%;C:\Users\<user>\AppData\Local\Programs\Python\Python37\Scripts"
+```
+
+Finally just run:
 
 ```
 dtctl 
 ```
-
-*Note:* 
-On Windows there could be issues with dtctl to be not in a user's %PATH% variable. Most likely
- due to venv particulars. Ensure that the python "Scripts" directory containing the dtct stubs 
- is in your path.
 
 ## Docker
 A Docker image is made available for getting started with dtctl. If you want to make use of a
