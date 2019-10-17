@@ -1,15 +1,14 @@
 # pylint: disable=C0325
 """Functions used by the Click breaches subcommand"""
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 from pandas.io.json import json_normalize
 from dtctl.utils.timeutils import fmttime, prstime
 from dtctl.utils.parsing import convert_series
 from dtctl.utils.reporting import format_report, device_info
 
 
-def get_breaches(api, acknowledged, tags, minimal, minscore, start_date, end_date):
+def get_breaches(api, acknowledged, tags, minimal, minscore, pid, start_date, end_date):
     """
     Function to get breaches based on filters and flags
 
@@ -23,6 +22,8 @@ def get_breaches(api, acknowledged, tags, minimal, minscore, start_date, end_dat
     :type minimal: Boolean
     :param minscore: Minimum score of breaches to filter on
     :type minscore: Float
+    :param pid: ID of a model to filter breaches on
+    :type pid: Int
     :param start_date:
     :type start_date: DateTime
     :param end_date:
@@ -36,8 +37,20 @@ def get_breaches(api, acknowledged, tags, minimal, minscore, start_date, end_dat
     str_acknowledged = str(acknowledged).lower() if acknowledged else 'false'
     str_minimal = str(minimal).lower() if minimal else 'false'
 
-    breaches = api.get('/modelbreaches', starttime=start_date, endtime=end_date, includeacknowledged=str_acknowledged,
-                       minimal=str_minimal, historicmodelonly='true', includebreachurl='true', minscore=minscore)
+    kwargs = {
+        'starttime': start_date,
+        'endtime': end_date,
+        'includeacknowledged': str_acknowledged,
+        'minimal': str_minimal,
+        'historicmodelonly': 'true',
+        'includebreachurl': 'true',
+        'minscore': minscore
+    }
+
+    if pid:
+        kwargs['pid'] = pid
+
+    breaches = api.get('/modelbreaches', **kwargs)
 
     if acknowledged:
         breaches = filter_acknowledged_breaches(breaches)
@@ -216,6 +229,7 @@ def report_breaches_brief(program_state, start_date, end_date, output_file, temp
     """
     # Get status information in order to get instance ID and label (for region)
     instances_by_id = get_instances_region(program_state.api)
+
     breaches = all_breaches(program_state.api, start_date, end_date)
     breaches_df = json_normalize(breaches)
     breaches_df.index = breaches_df['pbid']
@@ -229,12 +243,17 @@ def report_breaches_brief(program_state, start_date, end_date, output_file, temp
     breaches_df['acknowledged_time'] = breaches_df['acknowledged.time'].map(
         lambda x: prstime(x) if not np.isnan(x) else ''
     )
+    # Note that this way of checking for comments is unreliable. Comments made to breaches can be at a different
+    # time than the time of the breach. As such, it may be outside of the user specified window.
+    comments_json = program_state.api.get('/mbcomments', starttime=start_date, endtime=end_date)
+    breaches_df['comments'] = breaches_df['pbid'].map(lambda x: get_comments_from_collection(x, comments_json))
+
     rename_mapping = {'model.name': 'model_name'}
     breaches_df.rename(columns=rename_mapping, inplace=True)
     breaches_df.sort_values(by=['breach_time'], inplace=True)
 
     columns = ['breach_time', 'region', 'hostname', 'model_name', 'score', 'category', 'enhanced',
-               'acknowledged', 'acknowledged_time', 'tags']
+               'acknowledged', 'acknowledged_time', 'tags', 'comments']
 
     format_report(breaches_df[columns], output_file, template, output_format)
 
@@ -342,6 +361,27 @@ def get_comments(api, pbid):
     for comment in comments:
         message += '{0}:{1}\n'.format(comment['username'], comment['message'])
     return message
+
+
+def get_comments_from_collection(pbid, comments_collection):
+    """
+    Function for finding a comment belonging to a breach in a collection of comments requested by a generic
+    '/mbcomments' call. Note that this is resource heavy way of doing this and should preferably not be used
+
+    This function is here as a workaround for sending thousands of '/mbcomments?pbid=X' requests
+    to Darktrace.
+
+    :param pbid: The breach id to find comments for in the collection
+    :type pbid: Int
+    :param comments_collection: The list of comments to search through
+    :type comments_collection: List
+    :return: string: Compiled message containing all user comments (username:comment)
+    """
+    message = ''
+    for comment in comments_collection:
+        if pbid == comment['pbid']:
+            message += '{0}\n'.format(comment['message'])
+    return message.rstrip()
 
 
 def filter_acknowledged_breaches(breaches):

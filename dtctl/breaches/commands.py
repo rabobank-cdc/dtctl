@@ -11,12 +11,14 @@ from dtctl.utils.clickutils import OptionMutex
 @click.command('list', short_help='List Darktrace model breaches')
 @click.option('--acknowledged', '-a', is_flag=True, default=False, show_default=True,
               help='Show only acknowledged breaches')
-@click.option('--tag', '-t', 'tags', type=click.STRING, multiple=True, cls=OptionMutex, not_required_if=['minimal'],
-              help='Filter model breaches based on tag (option reusable)')
+@click.option('--tag', '-t', 'tags', type=click.STRING, multiple=True, cls=OptionMutex,
+              not_required_if=['minimal', 'pid'], help='Filter model breaches based on tag (option reusable)')
 @click.option('--minimal', '-m', type=click.STRING, is_flag=True, default=False, show_default=True,
               cls=OptionMutex, not_required_if=['tag'], help='Only show minimal breach details')
-@click.option('--minscore', '-s', type=click.FLOAT, default=0.0, show_default=True,
-              help='Filter model breaches based on score (1.0 = 100%)')
+@click.option('--minscore', '-s', type=click.FLOAT, default=0.0, show_default=True, cls=OptionMutex,
+              not_required_if=['pid'], help='Filter model breaches based on score (1.0 = 100%)')
+@click.option('--pid', '-p', type=click.INT, cls=OptionMutex, not_required_if=['tag, minscore'],
+              help='Filter model breaches based on model ID')
 @click.option('--days', '-d', default=7, type=click.INT,
               help='Number of days in the past for the start date of the report.')
 @click.option('--start-date', type=click.DateTime(formats=('%d-%m-%Y',)),
@@ -25,7 +27,7 @@ from dtctl.utils.clickutils import OptionMutex
               help='End date of the report.')
 @click.option('--outfile', '-o', help='Full path to the output file.', type=click.Path())
 @click.pass_obj
-def list_breaches(program_state, acknowledged, tags, minimal, minscore, days, start_date, end_date, outfile):
+def list_breaches(program_state, acknowledged, tags, minimal, minscore, pid, days, start_date, end_date, outfile):
     """List Darktrace model breaches"""
     end_date, start_date = determine_date_range(days, end_date, start_date)
 
@@ -35,7 +37,7 @@ def list_breaches(program_state, acknowledged, tags, minimal, minscore, days, st
         minscore = 0.0
     minscore = round(minscore, 1)
 
-    output = get_breaches(program_state.api, acknowledged, tags, minimal, minscore, start_date, end_date)
+    output = get_breaches(program_state.api, acknowledged, tags, minimal, minscore, pid, start_date, end_date)
     process_output(output, outfile)
 
 
