@@ -9,20 +9,20 @@ class Cef:
         'System Usage': {
             'type': 'cs1Label',
             'label': 'cs2Label',
-            'bandwidth': 'in',
-            'memused': 'cn1Label',
-            'connectionsPerMinuteCurrent': 'cn2Label',
-            'cpu': 'cn3Label',
-            'dtqueue': 'flexNumber1Label'
+            'bandwidth': 'cs3Label',  # better: in
+            'memused': 'cs4Label',  # better: cn1Label
+            'connectionsPerMinuteCurrent': 'cs5Label',  # cn2Label
+            'cpu': 'cs6Label',  # better: cn3Label
+            'dtqueue': 'flexString1Label'  # better: FlexNumber1
         },
         'Packet Loss': {
             'packet_loss': 'cfp1Label',
             'worker_drop_rate': 'cfp2Label'
         },
         'DHCP Quality': {
-            'subnets_tracking_dhcp': 'cn1Label',
-            'total_dhcp_quality': 'cn2Label',
-            'average_dhcp_quality': 'cn3Label1'
+            'subnets_tracking_dhcp': 'cs1Label',  # better: cn1Label
+            'total_dhcp_quality': 'cs2Label',  # better: cn2Label
+            'average_dhcp_quality': 'cs3Label'  # better: cn3Label
         },
         'System Issue': {
             'message': 'msg'
@@ -74,7 +74,7 @@ class Cef:
                 class_id=self.device_event_class_id,
                 name=self.name,
                 severity=self.severity,
-                ts=timestamp,
+                ts=timestamp.strftime('%b %d %Y %H:%M:%S'),
                 system=system_name
             )
 

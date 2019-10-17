@@ -109,9 +109,10 @@ def test_generate_logs_for_system_usage():
 
     cef_logging = cef.generate_logs(output)
     assert cef_logging[0].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|100|System Usage|3|' \
-                                     'end=2019-01-01 01:01:01 deviceExternalId=system1 dvc=10.0.0.1 cs1Label=type ' \
-                                     'cs1=master cs2Label=label cs2=Master machine in=1000000000 cn1Label=memused ' \
-                                     'cn1=10 cn2Label=connectionsPerMinuteCurrent cn2=1000 cn3Label=cpu cn3=10'
+                                     'end=Jan 01 2019 01:01:01 deviceExternalId=system1 dvc=10.0.0.1 cs1Label=type ' \
+                                     'cs1=master cs2Label=label cs2=Master machine cs3Label=bandwidth cs3=1000000000 ' \
+                                     'cs4Label=memused cs4=10 cs5Label=connectionsPerMinuteCurrent cs5=1000 ' \
+                                     'cs6Label=cpu cs6=10'
 
     with pytest.raises(TypeError) as exc_info:
         cef.generate_logs('Not a list')
@@ -132,7 +133,7 @@ def test_generate_logs_for_packet_loss():
 
     cef_logging = cef.generate_logs(output)
     assert cef_logging[0].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|110|Packet Loss|3|' \
-                                     'end=2019-01-01 01:01:01 deviceExternalId=system1 dvc=10.0.0.1 ' \
+                                     'end=Jan 01 2019 01:01:01 deviceExternalId=system1 dvc=10.0.0.1 ' \
                                      'cfp1Label=packet_loss cfp1=10.0 cfp2Label=worker_drop_rate cfp2=0.001'
 
     with pytest.raises(TypeError) as exc_info:
@@ -159,9 +160,9 @@ def test_generate_logs_for_dhcp():
 
     cef_logging = cef.generate_logs(output)
     assert cef_logging[0].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|120|DHCP Quality|4|' \
-                                     'end=2019-01-01 01:01:01 deviceExternalId=system1 ' \
-                                     'cn1Label=subnets_tracking_dhcp cn1=4 cn2Label=total_dhcp_quality cn2=100 ' \
-                                     'cn3Label1=average_dhcp_quality cn31=25'
+                                     'end=Jan 01 2019 01:01:01 deviceExternalId=system1 ' \
+                                     'cs1Label=subnets_tracking_dhcp cs1=4 cs2Label=total_dhcp_quality cs2=100 ' \
+                                     'cs3Label=average_dhcp_quality cs3=25'
     assert 'dvc=' not in cef_logging[0]
 
     with pytest.raises(TypeError) as exc_info:
@@ -181,7 +182,7 @@ def test_generate_logs_for_system_issue():
 
     cef_logging = cef.generate_logs(output)
     assert cef_logging[0].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|130|System Issue|5|' \
-                                     'end=2019-01-01 01:01:01 deviceExternalId=system1 ' \
+                                     'end=Jan 01 2019 01:01:01 deviceExternalId=system1 ' \
                                      'msg=Probe 10.0.0.1 has problem x'
 
     with pytest.raises(TypeError) as exc_info:
@@ -199,17 +200,25 @@ def test_cef_mapping():
 
     assert cef.MAPPING['System Usage']['type'] == 'cs1Label'
     assert cef.MAPPING['System Usage']['label'] == 'cs2Label'
-    assert cef.MAPPING['System Usage']['bandwidth'] == 'in'
-    assert cef.MAPPING['System Usage']['memused'] == 'cn1Label'
-    assert cef.MAPPING['System Usage']['connectionsPerMinuteCurrent'] == 'cn2Label'
-    assert cef.MAPPING['System Usage']['cpu'] == 'cn3Label'
-    assert cef.MAPPING['System Usage']['dtqueue'] == 'flexNumber1Label'
+    # assert cef.MAPPING['System Usage']['bandwidth'] == 'in'
+    assert cef.MAPPING['System Usage']['bandwidth'] == 'cs3Label'
+    # assert cef.MAPPING['System Usage']['memused'] == 'cn1Label'
+    assert cef.MAPPING['System Usage']['memused'] == 'cs4Label'
+    # assert cef.MAPPING['System Usage']['connectionsPerMinuteCurrent'] == 'cn2Label'
+    assert cef.MAPPING['System Usage']['connectionsPerMinuteCurrent'] == 'cs5Label'
+    # assert cef.MAPPING['System Usage']['cpu'] == 'cn3Label'
+    assert cef.MAPPING['System Usage']['cpu'] == 'cs6Label'
+    # assert cef.MAPPING['System Usage']['dtqueue'] == 'flexNumber1Label'
+    assert cef.MAPPING['System Usage']['dtqueue'] == 'flexString1Label'
 
     assert cef.MAPPING['Packet Loss']['packet_loss'] == 'cfp1Label'
     assert cef.MAPPING['Packet Loss']['worker_drop_rate'] == 'cfp2Label'
 
-    assert cef.MAPPING['DHCP Quality']['subnets_tracking_dhcp'] == 'cn1Label'
-    assert cef.MAPPING['DHCP Quality']['total_dhcp_quality'] == 'cn2Label'
-    assert cef.MAPPING['DHCP Quality']['average_dhcp_quality'] == 'cn3Label1'
+    # assert cef.MAPPING['DHCP Quality']['subnets_tracking_dhcp'] == 'cn1Label'
+    assert cef.MAPPING['DHCP Quality']['subnets_tracking_dhcp'] == 'cs1Label'
+    # assert cef.MAPPING['DHCP Quality']['total_dhcp_quality'] == 'cn2Label'
+    assert cef.MAPPING['DHCP Quality']['total_dhcp_quality'] == 'cs2Label'
+    # assert cef.MAPPING['DHCP Quality']['average_dhcp_quality'] == 'cn3Label1'
+    assert cef.MAPPING['DHCP Quality']['average_dhcp_quality'] == 'cs3Label'
 
     assert cef.MAPPING['System Issue']['message'] == 'msg'
