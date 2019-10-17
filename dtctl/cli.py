@@ -183,6 +183,7 @@ models.add_command(models_commands.list_models)
 models.add_command(models_commands.update_diff)
 models.add_command(models_commands.input_diff)
 models.add_command(models_commands.select_model)
+models.add_command(models_commands.search_model)
 
 # sub-commands for "subnets" command
 subnets.add_command(subnets_commands.list_subnets)

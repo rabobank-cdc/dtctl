@@ -4,7 +4,7 @@ import datetime as dt
 import click
 from dtctl.models.functions import get_autoupdatable, get_pending_updates, get_updatable, report_models, \
                                    breach_summary, get_models, get_models_with_changes, get_deleted_models, \
-                                   get_new_models, select_models_by_key_values
+                                   get_new_models, select_models_by_key_values, search_models
 from dtctl.models.model_differ import get_update_diffs
 from dtctl.utils.output import process_output
 from dtctl.utils.timeutils import determine_date_range
@@ -68,6 +68,24 @@ def autoupdatable(program_state, outfile):
 def pending_updates(program_state, outfile):
     """List all models that have updates pending"""
     process_output(get_pending_updates(program_state.api), outfile)
+
+
+@click.command('search', short_help='Case-insensitive search for models')
+@click.option('--name', '-n', type=click.STRING, help='Model name to search for (* and ? supported)')
+@click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
+@click.pass_obj
+def search_model(program_state, name, outfile):
+    """
+    Case-insensitive search for models
+
+    \b
+    Examples:
+        dtctl models search --name *SMB*
+        dtctl models search --name Device*
+        dtctl models search --name ?evice*
+    """
+    output = search_models(program_state.api, name)
+    process_output(output, outfile)
 
 
 @click.command('updatable', short_help='Models that can be updated without losing changes')

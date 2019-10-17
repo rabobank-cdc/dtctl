@@ -21,6 +21,7 @@ def test_models_command(get_private_key):
     assert re.search(r'list\s+List', result.output)
     assert re.search(r'pending-updates\s+Models', result.output)
     assert re.search(r'report\s+Generate', result.output)
+    assert re.search(r'search\s+Case', result.output)
     assert re.search(r'select\s+View', result.output)
     assert re.search(r'update-diff\s+Shows', result.output)
     assert re.search(r'updatable\s+Models', result.output)
@@ -111,6 +112,26 @@ def test_models_report_command(get_private_key):
     assert '--start-date [%d-%m-%Y]' in result.output
     assert '--end-date [%d-%m-%Y]' in result.output
     assert '-a, --active-only' in result.output
+    assert '-o, --outfile PATH' in result.output
+
+
+@patch('dtctl.cli.get_private_key')
+def test_models_search_command(get_private_key):
+    get_private_key.return_value = ''
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'models', 'search', '--help'])
+
+    assert result.exit_code == 0
+
+    # Ensures that arguments additions fail the test
+    assert 'Usage: cli models search [OPTIONS]' in result.output
+    assert ' Case-insensitive search for models' in result.output
+    assert 'Examples:' in result.output
+    assert 'dtctl models search --name *SMB*' in result.output
+    assert 'dtctl models search --name Device*' in result.output
+    assert 'dtctl models search --name ?evice*' in result.output
+
+    # Options
+    assert '-n, --name TEXT' in result.output
     assert '-o, --outfile PATH' in result.output
 
 

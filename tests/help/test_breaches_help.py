@@ -30,9 +30,10 @@ def test_breaches_list_command(get_private_key):
 
     # Options
     assert '-a, --acknowledged' in result.output
-    assert '-t, --tag' in result.output
+    assert '-t, --tag TEXT' in result.output
     assert '-m, --minimal' in result.output
-    assert '-s, --minscore' in result.output
+    assert '-s, --minscore FLOAT' in result.output
+    assert '-p, --pid INTEGER' in result.output
     assert '-d, --days INTEGER' in result.output
     assert '--start-date [%d-%m-%Y]' in result.output
     assert '--end-date [%d-%m-%Y]' in result.output

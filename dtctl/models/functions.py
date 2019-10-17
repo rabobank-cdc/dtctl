@@ -2,6 +2,7 @@
 # pylint: disable=E1135
 """Functions used by the Click models subcommand"""
 import os
+import fnmatch
 import datetime as dt
 import pandas as pd
 from pandas.io.json import json_normalize
@@ -442,3 +443,25 @@ def get_rules(api, list_of_cids):
     """
     components = api.get('/components')
     return [x for x in components if x['cid'] in list_of_cids]
+
+
+def search_models(api, name_query):
+    """
+    Function to search for models by quering model names
+
+    :param api: Darktrace API object with initialized config values
+    :type api: Api
+    :param name_query: Shell-style search string potentially containing wildcards
+    :type name_query: String
+    :return: Found devices or tags
+    :rtype: List
+    """
+    if name_query:
+        models = api.get('/models')
+        qualifying_models = []
+
+        for model in models:
+            if fnmatch.fnmatch(model['name'].lower(), name_query.lower()):
+                qualifying_models.append(model)
+
+        return qualifying_models
