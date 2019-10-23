@@ -29,7 +29,8 @@ def test_breaches_list_command(get_private_key):
     assert 'List Darktrace model breaches' in result.output
 
     # Options
-    assert '-a, --acknowledged' in result.output
+    assert '-a, --acknowledged-only' in result.output
+    assert '-k, --include-acknowledged' in result.output
     assert '-t, --tag TEXT' in result.output
     assert '-m, --minimal' in result.output
     assert '-s, --minscore FLOAT' in result.output

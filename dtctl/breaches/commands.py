@@ -9,10 +9,10 @@ from dtctl.utils.clickutils import OptionMutex
 
 
 @click.command('list', short_help='List Darktrace model breaches')
-@click.option('--acknowledged-only', '-a', is_flag=True, default=False, show_default=True, cls=OptionMutex,
-              not_required_if=['include-acknowledged'], help='List _only_ acknowledged breaches')
-@click.option('--include-acknowledged', '-k', is_flag=True, default=False, show_default=True, cls=OptionMutex,
-              not_required_if=['acknowledged-only'], help='Include acknowledged breaches')
+@click.option('--acknowledged-only', '-a', is_flag=True, default=False, show_default=True,
+              help='List only acknowledged breaches')
+@click.option('--include-acknowledged', '-k', is_flag=True, default=False, show_default=True,
+              help='Include acknowledged breaches')
 @click.option('--tag', '-t', 'tags', type=click.STRING, multiple=True, cls=OptionMutex,
               not_required_if=['minimal', 'pid'], help='Filter model breaches based on tag (option reusable)')
 @click.option('--minimal', '-m', type=click.STRING, is_flag=True, default=False, show_default=True,
