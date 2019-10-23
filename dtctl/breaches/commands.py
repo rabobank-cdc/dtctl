@@ -9,8 +9,10 @@ from dtctl.utils.clickutils import OptionMutex
 
 
 @click.command('list', short_help='List Darktrace model breaches')
-@click.option('--acknowledged', '-a', is_flag=True, default=False, show_default=True,
-              help='Show only acknowledged breaches')
+@click.option('--acknowledged-only', '-a', is_flag=True, default=False, show_default=True, cls=OptionMutex,
+              not_required_if=['include-acknowledged'], help='List _only_ acknowledged breaches')
+@click.option('--include-acknowledged', '-k', is_flag=True, default=False, show_default=True, cls=OptionMutex,
+              not_required_if=['acknowledged-only'], help='Include acknowledged breaches')
 @click.option('--tag', '-t', 'tags', type=click.STRING, multiple=True, cls=OptionMutex,
               not_required_if=['minimal', 'pid'], help='Filter model breaches based on tag (option reusable)')
 @click.option('--minimal', '-m', type=click.STRING, is_flag=True, default=False, show_default=True,
@@ -27,7 +29,8 @@ from dtctl.utils.clickutils import OptionMutex
               help='End date of the report.')
 @click.option('--outfile', '-o', help='Full path to the output file.', type=click.Path())
 @click.pass_obj
-def list_breaches(program_state, acknowledged, tags, minimal, minscore, pid, days, start_date, end_date, outfile):
+def list_breaches(program_state, acknowledged_only, include_acknowledged, tags, minimal, minscore, pid, days,
+                  start_date, end_date, outfile):
     """List Darktrace model breaches"""
     end_date, start_date = determine_date_range(days, end_date, start_date)
 
@@ -37,7 +40,12 @@ def list_breaches(program_state, acknowledged, tags, minimal, minscore, pid, day
         minscore = 0.0
     minscore = round(minscore, 1)
 
-    output = get_breaches(program_state.api, acknowledged, tags, minimal, minscore, pid, start_date, end_date)
+    if acknowledged_only:
+        include_acknowledged = True
+
+    output = get_breaches(program_state.api, acknowledged_only, include_acknowledged, tags, minimal,
+                          minscore, pid, start_date, end_date)
+
     process_output(output, outfile)
 
 

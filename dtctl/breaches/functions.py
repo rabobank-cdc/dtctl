@@ -8,14 +8,16 @@ from dtctl.utils.parsing import convert_series
 from dtctl.utils.reporting import format_report, device_info
 
 
-def get_breaches(api, acknowledged, tags, minimal, minscore, pid, start_date, end_date):
+def get_breaches(api, acknowledged_only, include_acknowledged, tags, minimal, minscore, pid, start_date, end_date):
     """
     Function to get breaches based on filters and flags
 
     :param api: Darktrace API object with initialized config values
     :type api: Api
-    :param acknowledged: Value of acknowledged flag
-    :type acknowledged: Boolean
+    :param acknowledged_only: Value of acknowledged-only flag
+    :type acknowledged_only: Boolean
+    :param include_acknowledged: Value of include-acknowledged flag
+    :type include_acknowledged: Boolean
     :param tags: Tags to filter on
     :type tags: List
     :param minimal: Value of minimal flag
@@ -34,13 +36,13 @@ def get_breaches(api, acknowledged, tags, minimal, minscore, pid, start_date, en
     start_date = fmttime(start_date) if start_date else None
     end_date = fmttime(end_date) if end_date else None
 
-    str_acknowledged = str(acknowledged).lower() if acknowledged else 'false'
+    str_include_acknowledged = str(include_acknowledged).lower() if include_acknowledged else 'false'
     str_minimal = str(minimal).lower() if minimal else 'false'
 
     kwargs = {
         'starttime': start_date,
         'endtime': end_date,
-        'includeacknowledged': str_acknowledged,
+        'includeacknowledged': str_include_acknowledged,
         'minimal': str_minimal,
         'historicmodelonly': 'true',
         'includebreachurl': 'true',
@@ -52,7 +54,7 @@ def get_breaches(api, acknowledged, tags, minimal, minscore, pid, start_date, en
 
     breaches = api.get('/modelbreaches', **kwargs)
 
-    if acknowledged:
+    if acknowledged_only:
         breaches = filter_acknowledged_breaches(breaches)
 
     if tags:
