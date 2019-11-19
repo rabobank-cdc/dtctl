@@ -67,3 +67,5 @@ def search_tags(api, name_query, devices_tagged_with):
                 found_tags.append(tag)
 
         return found_tags
+
+    return None

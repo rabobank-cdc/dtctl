@@ -1,7 +1,9 @@
 import json
 import pytest
+import ipaddress
 from unittest.mock import MagicMock
-from dtctl.system.functions import get_instances, get_info, get_usage
+from dtctl.system.functions import get_instances, get_info, get_usage, get_subnets_from_csv_file, \
+    get_subnets_from_text_file
 from dtctl.dtapi.api import Api
 
 
@@ -81,3 +83,23 @@ def test_get_usage(status_info):
     assert result[1]['connectionsPerMinuteCurrent'] == 10
     assert result[1]['label'] == 'Label with a name1'
     assert 'dtqueue' not in result[1]  # probes don't have dtqueue
+
+
+def test_get_subnets_from_csv_file():
+    infile_sample = 'tests/data/subnet_input_list.csv'
+
+    subnets = get_subnets_from_csv_file(infile_sample, 'network', 'netmask')
+    for subnet in subnets:  # set with one element
+        assert isinstance(subnet, ipaddress.IPv4Network)
+        assert str(subnet) == '10.0.0.0/24'
+
+
+def test_get_subnets_from_txt_file():
+    infile_sample = 'tests/data/subnet_input_list.txt'
+
+    subnets = get_subnets_from_text_file(infile_sample)
+    i = 0
+    for subnet in subnets:  # set with two element
+        assert isinstance(subnet, ipaddress.IPv4Network)
+        assert str(subnet) == '10.{0}.0.0/24'.format(i)
+        i += 1

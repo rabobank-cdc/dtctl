@@ -17,8 +17,10 @@ def test_system_command(get_private_key):
     assert result.exit_code == 0
     assert 'View internal Darktrace information' in result.output
     assert re.search(r'auditlog\s+Account', result.output)
+    assert re.search(r'coverage\s+Calculate', result.output)
     assert re.search(r'info\s+View', result.output)
     assert re.search(r'instances\s+View', result.output)
+    assert re.search(r'issues\s+View', result.output)
     assert re.search(r'packet-loss\s+View', result.output)
     assert re.search(r'status\s+Detailed', result.output)
     assert re.search(r'summary-statistics\s+Summary', result.output)
@@ -116,5 +118,27 @@ def test_system_usage_command(get_private_key):
     assert result.exit_code == 0
     assert 'Short usage information of all instances and probes' in result.output
     assert '-o, --outfile PATH' in result.output
+    assert '--log' in result.output
+    assert '--cef' in result.output
+
+
+@patch('dtctl.cli.get_private_key')
+def test_system_coverage_command(get_private_key):
+    get_private_key.return_value = ''
+    result = runner.invoke(cli, ['-h', '_', '-p', '_', 'system', 'coverage', '--help'])
+
+    assert result.exit_code == 0
+    assert 'Calculate coverage based on list of subnets expected to be monitored' in result.output
+    assert 'Coverage calculation is quite simplistic and naive:' in result.output
+    assert 'Coverage calculation is quite simplistic and naive:' in result.output
+    assert 'a = nr of expected subnets to be monitored' in result.output
+    assert 'b = nr of subnets seen by Darktrace that match an entry in the input file' in result.output
+    assert 'coverage in percentage = a / b * 100' in result.output
+    assert '-o, --outfile PATH' in result.output
+    assert '-i, --infile PATH' in result.output
+    assert '-f, --format [csv|text]' in result.output
+    assert ' --network-col TEXT' in result.output
+    assert ' --netmask-col TEXT' in result.output
+
     assert '--log' in result.output
     assert '--cef' in result.output

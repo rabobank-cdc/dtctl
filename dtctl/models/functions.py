@@ -465,3 +465,4 @@ def search_models(api, name_query):
                 qualifying_models.append(model)
 
         return qualifying_models
+    return None

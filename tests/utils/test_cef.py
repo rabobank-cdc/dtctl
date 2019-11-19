@@ -192,7 +192,7 @@ def test_generate_logs_for_system_issue():
 
 def test_cef_mapping():
     cef = Cef(100, 'System Usage')
-    assert len(cef.MAPPING) == 4
+    assert len(cef.MAPPING) == 5
     assert len(cef.MAPPING['System Usage']) == 7
     assert len(cef.MAPPING['Packet Loss']) == 2
     assert len(cef.MAPPING['DHCP Quality']) == 3
