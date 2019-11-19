@@ -204,6 +204,7 @@ system.add_command(system_commands.instances)
 system.add_command(system_commands.moo)
 system.add_command(system_commands.packet_loss)
 system.add_command(system_commands.issues)
+system.add_command(system_commands.coverage)
 
 # sub-commands for "tags" command
 tags.add_command(tags_commands.list_tags)

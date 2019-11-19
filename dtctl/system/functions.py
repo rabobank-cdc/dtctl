@@ -1,6 +1,130 @@
 """Functions used by the Click system subcommand"""
+import os.path
 import re
+import ipaddress
+import click
+import pandas as pd
 from dtctl.utils.timeutils import fmttime, prstime, utc_now_timestamp
+from dtctl.subnets.functions import get_subnet_list
+
+
+def calculate_coverage(api, infile, input_format, network_col, netmask_col):
+    """
+    Function to calculate Darktrace subnet coverage
+
+    :param api: Darktrace API object with initialized config values
+    :type api: Api
+    :param infile: Path to the specified input file
+    :type infile: String
+    :param input_format: Format of input file
+    :type input_format: String
+    :param network_col: Name of the column containing the network (if using CSV)
+    :type network_col: String
+    :param netmask_col: Name of the column containing the netmask (if using CSV)
+    :type netmask_col: String
+    :return: Object containing coverage information
+    :rtype: Dict
+    """
+    input_subnets = get_subnets_from_file(infile, input_format, network_col, netmask_col)
+    darktrace_seen_subnets = get_subnet_list(api)
+    subnets_covered = set()
+
+    for input_subnet in input_subnets:
+        for darktrace_seen_subnet in darktrace_seen_subnets:
+            if darktrace_seen_subnet.subnet_of(input_subnet):
+                subnets_covered.add(input_subnet)
+
+    try:
+        coverage_in_percentage = round(((len(subnets_covered) / len(input_subnets)) * 100), 2)
+    except ZeroDivisionError:
+        raise click.UsageError('No values in input file or no subnets seen by Darktrace')
+
+    return {
+        'system': 'unified_viewer',
+        'timestamp': utc_now_timestamp(),
+        'subnets_seen': len(darktrace_seen_subnets),
+        'subnets_expected': len(input_subnets),
+        'subnets_covered': len(subnets_covered),
+        'coverage_in_percentage': coverage_in_percentage
+    }
+
+
+def get_subnets_from_file(infile, input_format, network_col, netmask_col):
+    """
+    Function to retrieve subnets from text or CSV files
+
+    :param infile: Path to the specified input file
+    :type infile: String
+    :param input_format: Format of input file
+    :type input_format: String
+    :param network_col: Name of the column containing the network (if using CSV)
+    :type network_col: String
+    :param netmask_col: Name of the column containing the netmask (if using CSV)
+    :type netmask_col: String
+    :return: List of subnets in input file
+    :rtype: List
+    """
+    if not os.path.isfile(infile):
+        raise click.UsageError('input file does not exist')
+
+    if input_format == 'csv':
+        if not (network_col and netmask_col):
+            raise click.UsageError('please specify CSV columns to use')
+        return get_subnets_from_csv_file(infile, network_col, netmask_col)
+
+    # If not CSV, having column names is not what we want
+    if netmask_col or netmask_col:
+        raise click.UsageError('input format is TEXT but CSV column names are provided')
+    return get_subnets_from_text_file(infile)
+
+
+def get_subnets_from_text_file(infile):
+    """
+    Function to retrieve subnets from text files
+
+    :param infile: Path to the specified input file
+    :type infile: String
+    :return: List of subnets retrieved from input file
+    :rtype: List
+    """
+    input_subnets = set()
+
+    with open(infile) as input_file:
+        for line in input_file.readlines():
+            try:
+                input_subnets.add(ipaddress.ip_network(line.strip()))
+            except ValueError:
+                continue
+    return input_subnets
+
+
+def get_subnets_from_csv_file(infile, network_col, netmask_col):
+    """
+    Function to retrieve subnets from CSV file based on column names
+
+    :param infile: Path to the specified input file
+    :type infile: String
+    :param network_col: Name of the column containing the network (if using CSV)
+    :type network_col: String
+    :param netmask_col: Name of the column containing the netmask (if using CSV)
+    :type netmask_col: String
+    :return: Unique subnets retrieved from file
+    :rtype: Set
+    """
+    input_subnets = set()
+    try:
+        input_subnets_df = pd.read_csv(infile, sep=None, engine='python', usecols=[network_col, netmask_col])
+    except ValueError:
+        raise click.UsageError('Error finding specified column(s) in CSV file')
+
+    for _, row in input_subnets_df.iterrows():
+        subnet = '{0}/{1}'.format(row[network_col], row[netmask_col])
+        try:
+            input_subnets.add(ipaddress.ip_network(subnet))
+        except ValueError:
+            continue
+
+    return input_subnets
 
 
 def get_summary_statistics(api, **kwargs):

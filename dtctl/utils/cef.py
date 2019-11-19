@@ -26,6 +26,12 @@ class Cef:
         },
         'System Issue': {
             'message': 'msg'
+        },
+        'Subnet Coverage': {
+            'subnets_seen': 'cs1Label',  # better: cn1Label
+            'subnets_expected': 'cs2Label',  # better: cn2Label
+            'subnets_covered': 'cs3Label',  # better cn3Label
+            'coverage_in_percentage': 'cs4Label',  # better cn4Label
         }
     }
 

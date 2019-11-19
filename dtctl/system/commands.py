@@ -1,7 +1,7 @@
 # pylint: disable=C0111
 import click
 from dtctl.system.functions import get_status, get_usage, get_tags, get_info, get_auditlog, \
-    get_summary_statistics, get_instances, get_packet_loss, get_system_issues
+    get_summary_statistics, get_instances, get_packet_loss, get_system_issues, calculate_coverage
 from dtctl.utils.output import process_output
 from dtctl.utils.parsing import convert_json_to_log_lines
 from dtctl.utils.timeutils import determine_date_range
@@ -167,6 +167,53 @@ def issues(program_state, days, start_date, end_date, outfile, log, cef):
     if cef:
         cef_object = Cef(device_event_class_id=130, name='System Issue')
         output = cef_object.generate_logs(output)
+
+    process_output(output, outfile, append, to_json)
+
+
+@click.command('coverage', short_help='Calculate coverage based on list of subnets')
+@click.option('--outfile', '-o', type=click.Path(), help='Full path to the output file')
+@click.option('--infile', '-i', help='File with subnets that should be monitored',
+              type=click.Path(exists=True), required=True)
+@click.option('--format', '-f', 'input_format', help='Specify input format',
+              default='text', type=click.Choice(['csv', 'text']), show_default=True)
+@click.option('--network-col', help='Column name containing network', type=click.STRING)
+@click.option('--netmask-col', help='Column name containing subnet', type=click.STRING)
+@click.option('--log', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['cef'],
+              help='Line based output for logging purposes')
+@click.option('--cef', is_flag=True, default=False, show_default=True,
+              cls=OptionMutex, not_required_if=['log'],
+              help='Line based output for CEF logging purposes')
+@click.pass_obj
+def coverage(program_state, outfile, infile, input_format, network_col, netmask_col, log, cef):
+    """
+    Calculate coverage based on list of subnets expected to be monitored. Each subnet seen by
+    Darktrace is matched against each entry in the input file using Python's ipaddress library.
+
+    Coverage calculation is quite simplistic and naive:
+
+    \b
+    a = nr of expected subnets to be monitored
+    b = nr of subnets seen by Darktrace that match an entry in the input file
+
+    coverage in percentage = a / b * 100
+    """
+    click.echo('Calculating coverage, this will take a while...')
+    output = calculate_coverage(program_state.api, infile, input_format, network_col, netmask_col)
+    append = False
+    to_json = True
+
+    if log or cef:
+        append = True
+        to_json = False
+
+    if log:
+        output = convert_json_to_log_lines([output])
+
+    if cef:
+        cef_object = Cef(device_event_class_id=140, name='Subnet Coverage')
+        output = cef_object.generate_logs([output])
 
     process_output(output, outfile, append, to_json)
 
