@@ -61,9 +61,10 @@ def get_subnet_list(api):
         # This filters out IPv6 for which we are note interested right now
         # At a certain point we need to make this IPv6 compatible
         if isinstance(network, ipaddress.IPv4Network):
-            place_holder.add(subnet['network'])
+            place_holder.add(network)
 
-    return sorted(place_holder, key=lambda item: socket.inet_aton(item.split('/')[0]))
+    # return sorted(place_holder, key=lambda item: socket.inet_aton(item.split('/')[0]))
+    return sorted(place_holder)
 
 
 def get_aggregates(api):

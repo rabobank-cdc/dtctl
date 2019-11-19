@@ -13,7 +13,8 @@ from dtctl.utils.clickutils import OptionMutex
 @click.pass_obj
 def list_subnets(program_state, outfile):
     """List all subnets without their meta data (IPv4 only)"""
-    process_output(get_subnet_list(program_state.api), outfile)
+    subnets = [str(subnet) for subnet in get_subnet_list(program_state.api)]
+    process_output(subnets, outfile)
 
 
 @click.command('aggregates', short_help='Lists the CIDR merged subnets without their meta data (IPv4 only)')
