@@ -134,7 +134,7 @@ def test_generate_logs_for_packet_loss():
     cef_logging = cef.generate_logs(output)
     assert cef_logging[0].strip() == 'CEF:0|Darktrace|DCIP System Monitoring|1.0|110|Packet Loss|3|' \
                                      'end=Jan 01 2019 01:01:01 deviceExternalId=system1 dvc=10.0.0.1 ' \
-                                     'cfp1Label=packet_loss cfp1=10.0 cfp2Label=worker_drop_rate cfp2=0.001'
+                                     'cs1Label=packet_loss cs1=10.0 cs2Label=worker_drop_rate cs2=0.001'
 
     with pytest.raises(TypeError) as exc_info:
         cef.generate_logs('Not a list')
@@ -211,8 +211,8 @@ def test_cef_mapping():
     # assert cef.MAPPING['System Usage']['dtqueue'] == 'flexNumber1Label'
     assert cef.MAPPING['System Usage']['dtqueue'] == 'flexString1Label'
 
-    assert cef.MAPPING['Packet Loss']['packet_loss'] == 'cfp1Label'
-    assert cef.MAPPING['Packet Loss']['worker_drop_rate'] == 'cfp2Label'
+    assert cef.MAPPING['Packet Loss']['packet_loss'] == 'cs1Label'
+    assert cef.MAPPING['Packet Loss']['worker_drop_rate'] == 'cs2Label'
 
     # assert cef.MAPPING['DHCP Quality']['subnets_tracking_dhcp'] == 'cn1Label'
     assert cef.MAPPING['DHCP Quality']['subnets_tracking_dhcp'] == 'cs1Label'

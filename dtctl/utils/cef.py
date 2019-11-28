@@ -16,8 +16,8 @@ class Cef:
             'dtqueue': 'flexString1Label'  # better: FlexNumber1
         },
         'Packet Loss': {
-            'packet_loss': 'cfp1Label',
-            'worker_drop_rate': 'cfp2Label'
+            'packet_loss': 'cs1Label',  # better: cf1Label
+            'worker_drop_rate': 'cs2Label'  # better: cf2Label
         },
         'DHCP Quality': {
             'subnets_tracking_dhcp': 'cs1Label',  # better: cn1Label
